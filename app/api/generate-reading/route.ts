@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { generateReading } from "@/lib/openai";
 import { saveReading } from "@/lib/storage";
+import { createClient } from "@/lib/supabase/server";
 import type { UserInput, GenerateReadingResponse, GenerateReadingError } from "@/lib/types";
 
 // Force dynamic rendering (required for Vercel deployment)
@@ -26,6 +27,11 @@ const UserInputSchema = z.object({
 export async function POST(request: NextRequest) {
     try {
         console.log('[API] Received generate-reading request');
+
+        // Get authenticated user (optional - allows anonymous readings)
+        const supabase = await createClient();
+        const { data: { user } } = await supabase.auth.getUser();
+        console.log(`[API] User authenticated: ${!!user}`);
 
         // Parse request body
         const body = await request.json();
@@ -67,9 +73,9 @@ export async function POST(request: NextRequest) {
             );
         }
 
-        // Save to storage
-        console.log('[API] Saving reading to storage...');
-        const readingId = saveReading(inputs, reading);
+        // Save to Supabase
+        console.log('[API] Saving reading to Supabase...');
+        const readingId = await saveReading(inputs, reading, user?.id);
         console.log(`[API] Reading saved successfully with ID: ${readingId}`);
 
         // Return success response

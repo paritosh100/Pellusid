@@ -13,9 +13,10 @@ import type { UserInput } from "@/lib/types";
 interface JournalPromptProps {
     journalPrompt: string;
     userInputs: UserInput;
+    readingId: string;
 }
 
-export function JournalPrompt({ journalPrompt, userInputs }: JournalPromptProps) {
+export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalPromptProps) {
     const [showButtons, setShowButtons] = useState(true);
     const [answer, setAnswer] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +35,7 @@ export function JournalPrompt({ journalPrompt, userInputs }: JournalPromptProps)
                 body: JSON.stringify({
                     journalPrompt,
                     userInputs,
+                    readingId,
                 }),
             });
 

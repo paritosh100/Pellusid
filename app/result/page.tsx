@@ -26,8 +26,8 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
         notFound();
     }
 
-    // Fetch reading from storage
-    const storedReading = getReading(readingId);
+    // Fetch reading from Supabase
+    const storedReading = await getReading(readingId);
 
     if (!storedReading) {
         notFound();
@@ -115,7 +115,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
                 </Card>
 
                 {/* Journal Prompt */}
-                <JournalPrompt journalPrompt={reading.journalPrompt} userInputs={inputs} />
+                <JournalPrompt journalPrompt={reading.journalPrompt} userInputs={inputs} readingId={readingId} />
 
                 {/* Disclaimer */}
                 <div className="text-center p-6 bg-gray-100 dark:bg-gray-800 rounded-lg">

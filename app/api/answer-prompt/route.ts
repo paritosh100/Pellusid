@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { saveJournalResponse } from "@/lib/storage";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
@@ -13,11 +14,18 @@ const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL;
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { journalPrompt, userInputs } = body;
+        const { journalPrompt, userInputs, readingId } = body;
 
         if (!journalPrompt) {
             return NextResponse.json(
                 { error: "Journal prompt is required" },
+                { status: 400 }
+            );
+        }
+
+        if (!readingId) {
+            return NextResponse.json(
+                { error: "Reading ID is required" },
                 { status: 400 }
             );
         }
@@ -88,6 +96,9 @@ Be conversational and supportive, not formal or clinical.`;
         if (!answer) {
             throw new Error("No content in OpenAI response");
         }
+
+        // Save journal response to Supabase
+        await saveJournalResponse(readingId, journalPrompt, true, answer);
 
         return NextResponse.json({ answer });
     } catch (error) {
