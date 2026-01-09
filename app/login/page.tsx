@@ -95,7 +95,7 @@ export default function LoginPage() {
                         </Button> */}
 
                         {/* Divider */}
-                        <div className="relative">
+                        {/* <div className="relative">
                             <div className="absolute inset-0 flex items-center">
                                 <span className="w-full border-t" />
                             </div>
@@ -104,7 +104,7 @@ export default function LoginPage() {
                                     Or continue with email
                                 </span>
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* Email */}
                         <div className="space-y-2">
