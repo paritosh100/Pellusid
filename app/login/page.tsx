@@ -49,7 +49,7 @@ export default function LoginPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 flex items-center justify-center p-4">
+        <div className="min-h-screen bg-gradient-to-br from-[#8ae1fc]/10 via-[#50ffb1]/10 to-[#3c896d]/10 dark:from-[#4d685a] dark:via-[#546d64] dark:to-[#3c896d] flex items-center justify-center p-4">
             <Card className="w-full max-w-md shadow-2xl border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
                 <CardHeader className="space-y-1">
                     <CardTitle className="text-2xl font-bold text-center">Welcome Back</CardTitle>
@@ -99,7 +99,7 @@ export default function LoginPage() {
                         <Button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+                            className="w-full bg-gradient-to-r from-[#50ffb1] to-[#8ae1fc] hover:from-[#3c896d] hover:to-[#50ffb1] text-gray-900"
                         >
                             {isLoading ? "Signing in..." : "Sign In"}
                         </Button>
@@ -107,7 +107,7 @@ export default function LoginPage() {
                         {/* Sign Up Link */}
                         <p className="text-center text-sm text-gray-600 dark:text-gray-400">
                             Don't have an account?{" "}
-                            <Link href="/signup" className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium">
+                            <Link href="/signup" className="text-[#3c896d] dark:text-[#50ffb1] hover:underline font-medium">
                                 Sign up
                             </Link>
                         </p>

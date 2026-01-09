@@ -60,7 +60,7 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalP
     };
 
     return (
-        <Card className="mb-6 shadow-lg border-0 bg-gradient-to-br from-purple-100 to-pink-100 dark:from-purple-900/40 dark:to-pink-900/40">
+        <Card className="mb-6 shadow-lg border-0 bg-gradient-to-br from-[#50ffb1]/20 to-[#8ae1fc]/20 dark:from-[#3c896d]/40 dark:to-[#546d64]/40">
             <CardHeader>
                 <CardTitle className="text-xl">Something to Think About</CardTitle>
             </CardHeader>

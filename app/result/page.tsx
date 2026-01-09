@@ -36,7 +36,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
     const { reading, inputs } = storedReading;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900">
+        <div className="min-h-screen bg-gradient-to-br from-[#8ae1fc]/10 via-[#50ffb1]/10 to-[#3c896d]/10 dark:from-[#4d685a] dark:via-[#546d64] dark:to-[#3c896d]">
             <div className="container mx-auto px-4 py-8 max-w-3xl">
                 {/* Header */}
                 <div className="text-center mb-8 space-y-3">
@@ -104,7 +104,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
                         <ul className="space-y-2">
                             {reading.next7Days.map((focus, index) => (
                                 <li key={index} className="flex items-start gap-3">
-                                    <span className="text-indigo-600 dark:text-indigo-400 mt-1 font-bold">
+                                    <span className="text-[#3c896d] dark:text-[#50ffb1] mt-1 font-bold">
                                         {index + 1}.
                                     </span>
                                     <span className="text-gray-700 dark:text-gray-300">{focus}</span>
@@ -128,7 +128,7 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
                 <div className="text-center mt-8">
                     <a
                         href="/"
-                        className="text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                        className="text-[#3c896d] dark:text-[#50ffb1] hover:underline font-medium"
                     >
                         ← Generate Another Reading
                     </a>

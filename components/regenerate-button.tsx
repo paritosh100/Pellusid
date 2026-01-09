@@ -49,7 +49,7 @@ export function RegenerateButton({ inputs }: RegenerateButtonProps) {
         <Button
             onClick={handleRegenerate}
             disabled={isLoading}
-            className="gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            className="gap-2 bg-gradient-to-r from-[#50ffb1] to-[#8ae1fc] hover:from-[#3c896d] hover:to-[#50ffb1] text-gray-900"
         >
             {isLoading ? (
                 <>

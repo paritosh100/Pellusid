@@ -93,7 +93,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-indigo-900 flex items-center">
+    <div className="min-h-screen bg-gradient-to-br from-[#8ae1fc]/10 via-[#50ffb1]/10 to-[#3c896d]/10 dark:from-[#4d685a] dark:via-[#546d64] dark:to-[#3c896d] flex items-center">
       <div className="container mx-auto px-4 py-8">
         {/* Auth UI - Top Right */}
         <div className="absolute top-4 right-4">
@@ -107,7 +107,7 @@ export default function HomePage() {
                 </Button>
               </Link>
               <Link href="/signup">
-                <Button size="sm" className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700">
+                <Button size="sm" className="bg-gradient-to-r from-[#50ffb1] to-[#8ae1fc] hover:from-[#3c896d] hover:to-[#50ffb1] text-gray-900">
                   Sign Up
                 </Button>
               </Link>
@@ -117,7 +117,7 @@ export default function HomePage() {
 
         {/* Header */}
         <div className="text-center mb-6 space-y-2">
-          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 dark:from-indigo-400 dark:to-purple-400 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-[#3c896d] to-[#50ffb1] dark:from-[#50ffb1] dark:to-[#8ae1fc] bg-clip-text text-transparent">
             Pellucid Insights
           </h1>
           <p className="text-lg text-gray-600 dark:text-gray-300 max-w-xl mx-auto">
@@ -205,7 +205,7 @@ export default function HomePage() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full py-5 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl"
+                className="w-full py-5 bg-gradient-to-r from-[#50ffb1] to-[#8ae1fc] hover:from-[#3c896d] hover:to-[#50ffb1] text-gray-900 transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 {isLoading ? (
                   <span className="flex items-center gap-2">
