@@ -8,6 +8,7 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { SectionFeedback } from "@/components/section-feedback";
 import type { UserInput } from "@/lib/types";
 
 interface JournalPromptProps {
@@ -62,7 +63,10 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalP
     return (
         <Card className="mb-6 shadow-lg border-0 bg-gradient-to-br from-[#50ffb1]/20 to-[#8ae1fc]/20 dark:from-[#3c896d]/40 dark:to-[#546d64]/40">
             <CardHeader>
-                <CardTitle className="text-xl">Something to Think About</CardTitle>
+                <div className="flex items-center justify-between">
+                    <CardTitle className="text-xl">Something to Think About</CardTitle>
+                    <SectionFeedback section="journalPrompt" readingId={readingId} />
+                </div>
             </CardHeader>
             <CardContent className="space-y-4">
                 {/* Journal Prompt Question */}

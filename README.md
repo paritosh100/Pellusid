@@ -1,6 +1,6 @@
 # Pellucid Insights
 
-A production-ready Next.js application that generates personalized life-pattern insights using OpenAI. This is a reflection and self-guidance tool, not astrology or fortune-telling.
+A production-ready Next.js application that generates personalized life-pattern insights using OpenAI. This is a reflection and self-guidance tool.
 
 ## Features
 
@@ -94,27 +94,154 @@ pellucid-insights/
 
 ## Architecture
 
+### System Overview
+
+Pellucid Insights is a full-stack Next.js application with AI-powered insights generation, user authentication, persistent storage, and comprehensive feedback collection.
+
+```mermaid
+graph TB
+    subgraph Client["Client (Browser)"]
+        UI[User Interface]
+        Form[Input Form]
+        Results[Results Page]
+        Feedback[Feedback Widgets]
+    end
+    
+    subgraph NextJS["Next.js Application"]
+        API[API Routes]
+        SSR[Server Components]
+        
+        subgraph APIs["API Endpoints"]
+            GenAPI[/api/generate-reading]
+            FeedAPI[/api/feedback]
+            JournalAPI[/api/answer-prompt]
+        end
+    end
+    
+    subgraph External["External Services"]
+        OpenAI[OpenAI API<br/>GPT-4o-mini]
+        ADK[Google ADK<br/>Gemini 2.0 Flash]
+    end
+    
+    subgraph Database["Supabase (PostgreSQL)"]
+        ReadingsDB[(readings)]
+        FeedbackDB[(reading_feedback)]
+        AnalyticsDB[(analytics_events)]
+        JournalDB[(journal_answers)]
+    end
+    
+    UI --> Form
+    Form --> GenAPI
+    GenAPI --> OpenAI
+    GenAPI --> ADK
+    GenAPI --> ReadingsDB
+    GenAPI --> AnalyticsDB
+    
+    UI --> Results
+    Results --> SSR
+    SSR --> ReadingsDB
+    
+    Feedback --> FeedAPI
+    FeedAPI --> FeedbackDB
+    FeedAPI --> AnalyticsDB
+    
+    Results --> JournalAPI
+    JournalAPI --> OpenAI
+    JournalAPI --> ADK
+    JournalAPI --> JournalDB
+    
+    style Client fill:#e1f5ff
+    style NextJS fill:#fff4e1
+    style External fill:#ffe1e1
+    style Database fill:#e1ffe1
+```
+
+### Tech Stack
+
+- **Framework**: Next.js 15+ (App Router)
+- **Language**: TypeScript
+- **Styling**: TailwindCSS + shadcn/ui
+- **AI**: OpenAI API (GPT-4o-mini) + Google ADK (Gemini 2.0 Flash)
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **Validation**: Zod
+- **Deployment**: Vercel
+
 ### Server/Client Boundaries
 
-- **Server-only**: All OpenAI API calls happen in `/app/api/generate-reading/route.ts`
-- **Client components**: Form inputs, interactive buttons
-- **Server components**: Result page rendering
+- **Server-only**: All OpenAI/ADK API calls happen in `/app/api/` routes
+- **Client components**: Form inputs, interactive buttons, feedback widgets
+- **Server components**: Result page rendering, data fetching
 
 ### Data Flow
 
+#### Reading Generation
 1. User fills form on home page → Client component
 2. Form submits to `/api/generate-reading` → Server API route
-3. API validates inputs → Calls OpenAI → Stores result → Returns `readingId`
+3. API validates inputs → Calls OpenAI/ADK → Stores in Supabase → Returns `readingId`
 4. Client redirects to `/result?rid={readingId}`
-5. Server component fetches reading → Renders insights
+5. Server component fetches reading from Supabase → Renders insights
+
+#### Feedback Collection
+1. User interacts with section feedback pills (Hit/Useful/Vague/Off)
+2. Client sends to `/api/feedback` → Stores in `reading_feedback` table
+3. Analytics functions aggregate feedback for insights
+4. Overall feedback widget collects 5-star rating + text
+
+### Database Schema
+
+#### Tables
+
+**`readings`**
+- Stores generated readings with user inputs and AI-generated insights
+- Fields: `id`, `reading_id`, `user_id`, `headline`, `coreTheme`, `strengths`, `frictions`, `next7Days`, `journalPrompt`, etc.
+
+**`reading_feedback`**
+- Stores user feedback on readings
+- Quick reactions: `resonated`, `too_vague`, `off_base`, `helpful`, `not_helpful`
+- Detailed feedback: `rating` (1-5 stars), `feedback_text`
+- Section-specific ratings: `section_ratings` (JSONB)
+
+**`analytics_events`**
+- Tracks user interactions and events
+- Event types: `reading_generated`, `feedback_submitted`, `journal_answered`
+
+**`journal_answers`**
+- Stores AI-generated answers to journal prompts
+- Links to readings and user inputs
+
+#### Section Feedback Schema
+
+Section ratings are stored as JSONB:
+```json
+{
+  "coreTheme": { "reaction": "hit", "helpful": true },
+  "strengths": { "reaction": "useful", "helpful": true },
+  "frictions": { "reaction": "vague", "helpful": false },
+  "next7Days": { "reaction": "useful", "helpful": true },
+  "journalPrompt": { "reaction": "hit", "helpful": true }
+}
+```
+
+### Feedback System
+
+#### Section-Specific Feedback
+- **Sections**: Core Theme, Strengths, Frictions, Next 7 Days, Journal Prompt
+- **Reactions**: Hit, Useful, Vague, Off
+- **UI**: Inline pill-shaped buttons with colored text and borders
+- **Analytics**: Track positive percentage (Hit + Useful) per section
+
+#### Overall Feedback
+- **5-star rating** (required)
+- **Text feedback** (optional, max 1000 characters)
+- **Question**: "What would make this more helpful?"
 
 ### Storage
 
-Currently uses in-memory Map for demo purposes. For production:
-
-**TODO**: Migrate to persistent database (Supabase, Redis, or PostgreSQL)
-
-See `lib/storage.ts` for implementation details.
+**Production**: Supabase PostgreSQL with Row Level Security (RLS)
+- Authenticated users can view their own readings and feedback
+- Anonymous users can submit feedback (stored without user_id)
+- Automatic timestamp tracking with triggers
 
 ## Deployment
 

@@ -9,6 +9,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ShareButton } from "@/components/share-button";
 import { RegenerateButton } from "@/components/regenerate-button";
 import { JournalPrompt } from "@/components/journal-prompt";
+import { FeedbackWidget } from "@/components/feedback-widget";
+import { SectionFeedback } from "@/components/section-feedback";
 
 // Force dynamic rendering (required for Vercel deployment)
 export const dynamic = "force-dynamic";
@@ -53,7 +55,13 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
                 {/* Core Theme */}
                 <Card className="mb-6 shadow-lg border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-                    <CardContent className="pt-6">
+                    <CardHeader className="pb-3">
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-xl">Core Theme</CardTitle>
+                            <SectionFeedback section="coreTheme" readingId={readingId} />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
                         <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-line">
                             {reading.coreTheme}
                         </p>
@@ -63,7 +71,10 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
                 {/* Strengths */}
                 <Card className="mb-6 shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                     <CardHeader>
-                        <CardTitle className="text-xl">What's Working</CardTitle>
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-xl">What's Working</CardTitle>
+                            <SectionFeedback section="strengths" readingId={readingId} />
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-2">
@@ -80,7 +91,10 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
                 {/* Frictions */}
                 <Card className="mb-6 shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                     <CardHeader>
-                        <CardTitle className="text-xl">Energy Drains</CardTitle>
+                        <div className="flex items-center justify-between">
+                            <CardTitle className="text-xl">Energy Drains</CardTitle>
+                            <SectionFeedback section="frictions" readingId={readingId} />
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-2">
@@ -97,8 +111,13 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
                 {/* Next 7 Days */}
                 <Card className="mb-6 shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                     <CardHeader>
-                        <CardTitle className="text-xl">Next 7 Days</CardTitle>
-                        <CardDescription>Focus areas to consider</CardDescription>
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <CardTitle className="text-xl">Next 7 Days</CardTitle>
+                                <CardDescription>Focus areas to consider</CardDescription>
+                            </div>
+                            <SectionFeedback section="next7Days" readingId={readingId} />
+                        </div>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-2">
@@ -116,6 +135,9 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
                 {/* Journal Prompt */}
                 <JournalPrompt journalPrompt={reading.journalPrompt} userInputs={inputs} readingId={readingId} />
+
+                {/* Feedback Widget */}
+                <FeedbackWidget readingId={readingId} />
 
                 {/* Disclaimer */}
                 <div className="text-center p-6 bg-gray-100 dark:bg-gray-800 rounded-lg">
