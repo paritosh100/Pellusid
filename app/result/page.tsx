@@ -77,17 +77,17 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
                     </CardContent>
                 </Card>
 
-                {/* Watch Outs */}
+                {/* Frictions */}
                 <Card className="mb-6 shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
                     <CardHeader>
-                        <CardTitle className="text-xl">Things to Watch</CardTitle>
+                        <CardTitle className="text-xl">Energy Drains</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-2">
-                            {reading.watchOuts.map((watchOut, index) => (
+                            {reading.frictions.map((friction, index) => (
                                 <li key={index} className="flex items-start gap-3">
                                     <span className="text-amber-600 dark:text-amber-400 mt-1 text-lg">⚠</span>
-                                    <span className="text-gray-700 dark:text-gray-300">{watchOut}</span>
+                                    <span className="text-gray-700 dark:text-gray-300">{friction}</span>
                                 </li>
                             ))}
                         </ul>

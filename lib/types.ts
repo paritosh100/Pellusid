@@ -16,7 +16,7 @@ export interface ReadingResponse {
   headline: string;
   coreTheme: string;
   strengths: string[];
-  watchOuts: string[];
+  frictions: string[];
   next7Days: string[];
   journalPrompt: string;
   disclaimer: string;

@@ -5,11 +5,15 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { answerPromptWithADK } from "@/lib/adk-client";
 import { saveJournalResponse } from "@/lib/storage";
 
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4o-mini";
 const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL;
+
+// Feature flag for ADK backend
+const USE_ADK_BACKEND = process.env.USE_ADK_BACKEND === "true";
 
 export async function POST(req: NextRequest) {
     try {
@@ -42,25 +46,34 @@ export async function POST(req: NextRequest) {
             baseURL: OPENAI_BASE_URL,
         });
 
+
         // Build the system prompt for answering the journal question
-        const systemPrompt = `You are a thoughtful reflection assistant helping someone explore a journal prompt.
+        const systemPrompt = `You are a reflection and pattern-synthesis assistant.
+Your role is to help the user notice possible recurring patterns in their own words, not to solve, advise, or guide.
 
-Your role is to:
-- Provide a gentle, exploratory answer that helps the user think more deeply
-- Use simple, clear language
-- Avoid being prescriptive or directive
-- Normalize their experience and reduce self-judgment
-- Keep the tone warm, grounded, and non-mystical
-- Frame insights as possibilities, not certainties
+Respond with one grounded paragraph that:
+- Reflects back a recognizable tension implied by the user's journal entry
+- Uses simple, calm, observational language
+- Normalizes confusion or mixed feelings without reassurance or motivation
+- Reduces self-blame without offering solutions
 
-Use phrases like:
-- "One way to think about this is..."
-- "Some people find that..."
-- "This might reflect..."
-- "You could explore..."
+You may draw from Vedic astrology, numerology, or Chinese astrology only as interpretive lenses, never as truth, prediction, or authority.
+If multiple lenses align, note the overlap gently. If they differ, acknowledge contrast without resolving it.
 
-Keep your response to 3-4 short paragraphs maximum.
-Be conversational and supportive, not formal or clinical.`;
+Important Rules
+- Do NOT give advice, suggestions, or next steps
+- Do NOT predict outcomes or imply future change
+- Do NOT use absolute or motivational language
+- Do NOT tell the user what to do
+- Do NOT introduce urgency or dependency
+
+Include one subtle mirror of lived experience (such as delayed momentum, mental fatigue, quiet doubt, or effort without feedback), without assuming facts.
+
+The response should feel like:
+"This reflects something you may already sense."
+
+End with containment, not resolution. Do not ask questions.`;
+
 
         // Build user prompt with context
         let userPrompt = `The user is reflecting on this question:\n\n"${journalPrompt}"\n\n`;
@@ -81,20 +94,48 @@ Be conversational and supportive, not formal or clinical.`;
 
         userPrompt += `Provide a thoughtful, exploratory answer to help them reflect on this question.`;
 
-        const completion = await openai.chat.completions.create({
-            model: OPENAI_MODEL,
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt },
-            ],
-            temperature: 0.7,
-            max_tokens: 500,
-        });
+        let answer: string;
 
-        const answer = completion.choices[0]?.message?.content;
+        if (USE_ADK_BACKEND) {
+            // Use Google ADK backend
+            const adkResponse = await answerPromptWithADK({
+                journalPrompt,
+                userInputs,
+                readingId
+            });
+            answer = adkResponse.answer;
+        } else {
+            // Use OpenAI backend
+            const completion = await openai.chat.completions.create({
+                model: OPENAI_MODEL,
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: userPrompt },
+                ],
+                temperature: 0.2,
+                max_tokens: 150,
+            });
 
-        if (!answer) {
-            throw new Error("No content in OpenAI response");
+            answer = completion.choices[0]?.message?.content || "";
+
+            if (!answer) {
+                throw new Error("No content in OpenAI response");
+            }
+
+            // If response was cut off due to token limit, request a shorter version
+            if (completion.choices[0]?.finish_reason === "length") {
+                const retryCompletion = await openai.chat.completions.create({
+                    model: OPENAI_MODEL,
+                    messages: [
+                        { role: "system", content: systemPrompt + "\n\nIMPORTANT: Keep your response to 2-3 sentences maximum to ensure it completes within the token limit." },
+                        { role: "user", content: userPrompt },
+                    ],
+                    temperature: 0.2,
+                    max_tokens: 100,
+                });
+
+                answer = retryCompletion.choices[0]?.message?.content || answer;
+            }
         }
 
         // Save journal response to Supabase

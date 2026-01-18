@@ -8,12 +8,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { generateReading } from "@/lib/openai";
+import { generateReadingWithADK } from "@/lib/adk-client";
 import { saveReading } from "@/lib/storage";
 import { createClient } from "@/lib/supabase/server";
 import type { UserInput, GenerateReadingResponse, GenerateReadingError } from "@/lib/types";
 
 // Force dynamic rendering (required for Vercel deployment)
 export const dynamic = "force-dynamic";
+
+// Feature flag for ADK backend
+const USE_ADK_BACKEND = process.env.USE_ADK_BACKEND === "true";
 
 // Validation schema using Zod
 const UserInputSchema = z.object({
@@ -55,19 +59,27 @@ export async function POST(request: NextRequest) {
         const inputs: UserInput = validationResult.data;
         console.log('[API] Inputs validated successfully');
 
-        // Generate reading using OpenAI
-        console.log('[API] Starting OpenAI generation...');
+        // Generate reading using selected backend
+        const backendName = USE_ADK_BACKEND ? "ADK" : "OpenAI";
+        console.log(`[API] Starting ${backendName} generation...`);
         let reading;
         try {
-            reading = await generateReading(inputs);
-            console.log('[API] OpenAI generation successful');
-        } catch (openaiError) {
-            console.error("[API] OpenAI generation failed:", openaiError);
+            if (USE_ADK_BACKEND) {
+                // Use Google ADK multi-agent backend
+                reading = await generateReadingWithADK(inputs);
+                console.log('[API] ADK generation successful');
+            } else {
+                // Use OpenAI single-agent backend
+                reading = await generateReading(inputs);
+                console.log('[API] OpenAI generation successful');
+            }
+        } catch (generationError) {
+            console.error(`[API] ${backendName} generation failed:`, generationError);
 
             return NextResponse.json<GenerateReadingError>(
                 {
                     error: "Failed to generate reading",
-                    details: openaiError instanceof Error ? openaiError.message : "Unknown error"
+                    details: generationError instanceof Error ? generationError.message : "Unknown error"
                 },
                 { status: 500 }
             );

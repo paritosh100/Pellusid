@@ -34,9 +34,32 @@ yarn-error.log*
 .env*
 !.env.local.example
 .env.local
+
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Sensitive credentials and secrets
+auth0-clientid.json
+*-clientid.json
+*-credentials.json
+*.key
+*.secret
+
+# ADK Backend Python files
+adk-backend/__pycache__/
+adk-backend/*.py[cod]
+adk-backend/venv/
+adk-backend/.env
+adk-backend/.env.local
+adk-backend/*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
