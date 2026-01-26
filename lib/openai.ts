@@ -15,20 +15,20 @@ const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL;
 let openaiClient: OpenAI | null = null;
 
 function getOpenAIClient(): OpenAI {
-    if (!openaiClient) {
-        if (!OPENAI_API_KEY) {
-            throw new Error(
-                "OPENAI_API_KEY environment variable is required but not set"
-            );
-        }
-
-        openaiClient = new OpenAI({
-            apiKey: OPENAI_API_KEY,
-            baseURL: OPENAI_BASE_URL,
-        });
+  if (!openaiClient) {
+    if (!OPENAI_API_KEY) {
+      throw new Error(
+        "OPENAI_API_KEY environment variable is required but not set"
+      );
     }
 
-    return openaiClient;
+    openaiClient = new OpenAI({
+      apiKey: OPENAI_API_KEY,
+      baseURL: OPENAI_BASE_URL,
+    });
+  }
+
+  return openaiClient;
 }
 
 /**
@@ -36,31 +36,31 @@ function getOpenAIClient(): OpenAI {
  * Strips markdown code fences and validates JSON
  */
 export function parseJsonResponse(text: string): ReadingResponse {
-    // Strip markdown code fences if present
-    let cleaned = text.trim();
+  // Strip markdown code fences if present
+  let cleaned = text.trim();
 
-    // Remove ```json and ``` fences
-    if (cleaned.startsWith("```")) {
-        cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-    }
+  // Remove ```json and ``` fences
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+  }
 
-    cleaned = cleaned.trim();
+  cleaned = cleaned.trim();
 
-    try {
-        const parsed = JSON.parse(cleaned);
-        return parsed as ReadingResponse;
-    } catch (error) {
-        console.error("Failed to parse JSON response:", error);
-        console.error("Raw text:", text);
-        throw new Error("Failed to parse OpenAI response as JSON");
-    }
+  try {
+    const parsed = JSON.parse(cleaned);
+    return parsed as ReadingResponse;
+  } catch (error) {
+    console.error("Failed to parse JSON response:", error);
+    console.error("Raw text:", text);
+    throw new Error("Failed to parse OpenAI response as JSON");
+  }
 }
 
 /**
  * Build the system prompt with strict JSON schema instructions
  */
 export function buildSystemPrompt(): string {
-    return `Purpose
+  return `Purpose
 You are a reflection and pattern-synthesis tool that helps the user think more clearly when they feel mentally stuck, overloaded, or uncertain.
 You surface patterns the user may recognize.
 You do not solve, advise, decide, or predict.
@@ -83,10 +83,15 @@ Do NOT give medical, legal, or financial guidance
 Do NOT assert that any system is objectively true
 
 How to Use Astrology & Pattern Systems
-Treat each system as a pattern language only
-Focus on tendencies, themes, and recurring dynamics
-Highlight overlap across systems when relevant
-If signals differ, acknowledge contrast without resolving it
+You have access to real calculation tools for numerology, Chinese astrology, and Vedic astrology.
+ALWAYS call these tools first before generating insights to get accurate data.
+Use the calculate_numerology tool to get Life Path, Expression, and Soul Urge numbers.
+Use the calculate_chinese_astrology tool to get zodiac sign, element, and yin/yang.
+Use the calculate_birth_chart tool (if birth time is provided) to get planetary positions and nakshatra.
+After receiving calculation results, treat each system as a pattern language only.
+Focus on tendencies, themes, and recurring dynamics from the calculated data.
+Highlight overlap across systems when relevant.
+If signals differ, acknowledge contrast without resolving it.
 Use phrasing like:
   "Often associated with…"
   "Tends to emphasize…"
@@ -163,7 +168,7 @@ Return ONLY valid JSON with the keys below. No markdown. No commentary. No extra
   "next7Days": [
     "exactly 3 strings, each ≤ 10 words, awareness-focused"
   ],
-  "journalPrompt": "one simple reflective question",
+  "journalPrompt": "one simple career-focused question (e.g., 'What are you most unsure about in your career right now?')",
   "disclaimer": "one sentence reminding this is a lens, not a rule, and the user decides what matters"
 }
 
@@ -182,65 +187,240 @@ No explanations`
  * Build the user prompt with input data
  */
 export function buildUserPrompt(inputs: UserInput): string {
-    const { name, birthDate, birthTime, birthCity, focusArea } = inputs;
+  const { name, birthDate, birthTime, birthCity, focusArea } = inputs;
 
-    let prompt = `Generate a life-pattern insights reading for:\n\n`;
-    prompt += `Name: ${name}\n`;
-    prompt += `Birth Date: ${birthDate}\n`;
+  let prompt = `Generate a life-pattern insights reading for:\n\n`;
+  prompt += `Name: ${name}\n`;
+  prompt += `Birth Date: ${birthDate}\n`;
 
-    if (birthTime) {
-        prompt += `Birth Time: ${birthTime}\n`;
-    }
+  if (birthTime) {
+    prompt += `Birth Time: ${birthTime}\n`;
+  }
 
-    prompt += `Birth City: ${birthCity}\n`;
+  prompt += `Birth City: ${birthCity}\n`;
 
-    if (focusArea) {
-        prompt += `\nCurrent Focus: ${focusArea}\n`;
-    }
+  if (focusArea) {
+    prompt += `\nCurrent Focus: ${focusArea}\n`;
+  }
 
-    prompt += `\nGenerate personalized insights that feel specific to ${name}. `;
-    prompt += `Reference their city context lightly (no stereotypes). `;
+  prompt += `\nGenerate personalized insights that feel specific to ${name}. `;
+  prompt += `Reference their city context lightly (no stereotypes). `;
 
-    if (focusArea) {
-        prompt += `Pay special attention to their focus area. `;
-    }
+  if (focusArea) {
+    prompt += `Pay special attention to their focus area. `;
+  }
 
-    prompt += `\nRemember: Output ONLY valid JSON matching the schema. No markdown fences.`;
+  prompt += `\nRemember: Output ONLY valid JSON matching the schema. No markdown fences.`;
 
-    return prompt;
+  return prompt;
 }
 
 /**
- * Generate a reading using OpenAI
+ * Define calculation tools for OpenAI function calling
+ */
+function getCalculationTools() {
+  return [
+    {
+      type: "function" as const,
+      function: {
+        name: "calculate_numerology",
+        description:
+          "Calculate numerology profile including Life Path Number, Expression Number, Soul Urge Number, and Personal Year",
+        parameters: {
+          type: "object",
+          properties: {
+            name: {
+              type: "string",
+              description: "Full name of the person",
+            },
+            birthDate: {
+              type: "string",
+              description: "Birth date in YYYY-MM-DD format",
+            },
+          },
+          required: ["name", "birthDate"],
+        },
+      },
+    },
+    {
+      type: "function" as const,
+      function: {
+        name: "calculate_chinese_astrology",
+        description:
+          "Calculate Chinese astrology profile including zodiac sign, element, yin/yang, and associated traits",
+        parameters: {
+          type: "object",
+          properties: {
+            birthDate: {
+              type: "string",
+              description: "Birth date in YYYY-MM-DD format",
+            },
+          },
+          required: ["birthDate"],
+        },
+      },
+    },
+    {
+      type: "function" as const,
+      function: {
+        name: "calculate_birth_chart",
+        description:
+          "Calculate Vedic birth chart with planetary positions, ascendant, and Moon's nakshatra",
+        parameters: {
+          type: "object",
+          properties: {
+            birthDate: {
+              type: "string",
+              description: "Birth date in YYYY-MM-DD format",
+            },
+            birthTime: {
+              type: "string",
+              description: "Birth time in HH:MM format (24-hour)",
+            },
+            birthCity: {
+              type: "string",
+              description: "City of birth for timezone calculation",
+            },
+          },
+          required: ["birthDate"],
+        },
+      },
+    },
+  ];
+}
+
+/**
+ * Execute a tool call and return the result
+ */
+async function executeToolCall(
+  toolName: string,
+  toolArgs: Record<string, unknown>
+): Promise<string> {
+  try {
+    switch (toolName) {
+      case "calculate_numerology": {
+        const { calculateNumerologyProfile } = await import(
+          "./calculations/numerology"
+        );
+        const result = calculateNumerologyProfile(
+          toolArgs.name as string,
+          toolArgs.birthDate as string
+        );
+        return JSON.stringify(result, null, 2);
+      }
+
+      case "calculate_chinese_astrology": {
+        const { calculateChineseAstrology } = await import(
+          "./calculations/chinese-astrology"
+        );
+        const result = calculateChineseAstrology(
+          toolArgs.birthDate as string
+        );
+        return JSON.stringify(result, null, 2);
+      }
+
+      case "calculate_birth_chart": {
+        const { calculateBirthChart } = await import(
+          "./calculations/vedic-astrology"
+        );
+        const result = calculateBirthChart(
+          toolArgs.birthDate as string,
+          toolArgs.birthTime as string,
+          toolArgs.birthCity as string
+        );
+        return JSON.stringify(result, null, 2);
+      }
+
+      default:
+        return JSON.stringify({ error: "Unknown tool" });
+    }
+  } catch (error) {
+    console.error(`Error executing tool ${toolName}:`, error);
+    return JSON.stringify({
+      error: `Failed to execute ${toolName}: ${error}`,
+    });
+  }
+}
+
+/**
+ * Generate a reading using OpenAI with function calling support
  */
 export async function generateReading(
-    inputs: UserInput
+  inputs: UserInput
 ): Promise<ReadingResponse> {
-    const systemPrompt = buildSystemPrompt();
-    const userPrompt = buildUserPrompt(inputs);
-    const openai = getOpenAIClient();
+  const systemPrompt = buildSystemPrompt();
+  const userPrompt = buildUserPrompt(inputs);
+  const openai = getOpenAIClient();
+  const tools = getCalculationTools();
 
-    try {
-        const completion = await openai.chat.completions.create({
-            model: OPENAI_MODEL,
-            messages: [
-                { role: "system", content: systemPrompt },
-                { role: "user", content: userPrompt },
-            ],
-            temperature: 0.2,
-            top_p: 1,
-            response_format: { type: "json_object" }, // Enforce JSON mode
-        });
+  try {
+    // First API call with tools
+    let messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ];
 
-        const content = completion.choices[0]?.message?.content;
+    let completion = await openai.chat.completions.create({
+      model: OPENAI_MODEL,
+      messages,
+      tools,
+      tool_choice: "auto",
+      temperature: 0.2,
+      top_p: 1,
+    });
 
-        if (!content) {
-            throw new Error("No content in OpenAI response");
+    let assistantMessage = completion.choices[0]?.message;
+
+    // Handle tool calls if present
+    if (assistantMessage?.tool_calls && assistantMessage.tool_calls.length > 0) {
+      // Add assistant's message with tool calls
+      messages.push({
+        role: "assistant",
+        content: assistantMessage.content || "",
+        tool_calls: assistantMessage.tool_calls,
+      });
+
+      // Execute each tool call
+      for (const toolCall of assistantMessage.tool_calls) {
+        if (toolCall.type === "function") {
+          const functionName = toolCall.function.name;
+          const functionArgs = JSON.parse(toolCall.function.arguments);
+
+          const toolResult = await executeToolCall(
+            functionName,
+            functionArgs
+          );
+
+          // Add tool result to messages
+          messages.push({
+            role: "tool",
+            tool_call_id: toolCall.id,
+            content: toolResult,
+          });
         }
+      }
 
-        return parseJsonResponse(content);
-    } catch (error) {
-        console.error("OpenAI API error:", error);
-        throw error;
+      // Make second API call with tool results
+      completion = await openai.chat.completions.create({
+        model: OPENAI_MODEL,
+        messages,
+        temperature: 0.2,
+        top_p: 1,
+        response_format: { type: "json_object" },
+      });
+
+      assistantMessage = completion.choices[0]?.message;
     }
+
+    const content = assistantMessage?.content;
+
+    if (!content) {
+      throw new Error("No content in OpenAI response");
+    }
+
+    return parseJsonResponse(content);
+  } catch (error) {
+    console.error("OpenAI API error:", error);
+    throw error;
+  }
 }

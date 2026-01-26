@@ -11,6 +11,7 @@ import { RegenerateButton } from "@/components/regenerate-button";
 import { JournalPrompt } from "@/components/journal-prompt";
 import { FeedbackWidget } from "@/components/feedback-widget";
 import { SectionFeedback } from "@/components/section-feedback";
+import { AppNameFeedback } from "@/components/app-name-feedback";
 
 // Force dynamic rendering (required for Vercel deployment)
 export const dynamic = "force-dynamic";
@@ -135,6 +136,9 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
 
                 {/* Journal Prompt */}
                 <JournalPrompt journalPrompt={reading.journalPrompt} userInputs={inputs} readingId={readingId} />
+
+                {/* App Name Feedback */}
+                <AppNameFeedback />
 
                 {/* Feedback Widget */}
                 <FeedbackWidget readingId={readingId} />

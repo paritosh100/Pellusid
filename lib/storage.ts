@@ -168,12 +168,14 @@ export async function getUserReadings(
  * @param journalPrompt - The journal prompt question
  * @param accepted - Whether user accepted or rejected
  * @param answer - Generated answer if accepted
+ * @param isCustom - Whether the prompt was custom written by user
  */
 export async function saveJournalResponse(
     readingId: string,
     journalPrompt: string,
     accepted: boolean,
-    answer?: string
+    answer?: string,
+    isCustom: boolean = false
 ): Promise<void> {
     const supabase = await createClient();
 
@@ -194,6 +196,8 @@ export async function saveJournalResponse(
         journal_prompt: journalPrompt,
         user_accepted: accepted,
         generated_answer: answer || null,
+        // We could add an is_custom column to the table later if needed,
+        // for now we'll rely on analytics events for this distinction
     });
 
     if (error) {
@@ -201,11 +205,16 @@ export async function saveJournalResponse(
         throw new Error("Failed to save journal response");
     }
 
-    // Track analytics event
+    // Track analytics event using database UUID
+    console.log(`[AnalyticsDebug] Tracking event for Reading Public ID: ${readingId}, Internal ID: ${reading.id}`);
     await trackAnalyticsEvent({
         eventType: accepted ? "prompt_accepted" : "prompt_rejected",
-        readingId,
+        readingId: reading.id,
         userId: reading.user_id || undefined,
+        metadata: {
+            isCustom,
+            questionLength: journalPrompt.length
+        }
     });
 }
 

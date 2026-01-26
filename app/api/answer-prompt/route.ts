@@ -1,6 +1,6 @@
 /**
- * API Route: Answer Journal Prompt
- * Generates an answer to the journal prompt question
+ * API Route: Answer Career Question
+ * Generates an astrological answer to the career question
  */
 
 import { NextRequest, NextResponse } from "next/server";
@@ -18,7 +18,7 @@ const USE_ADK_BACKEND = process.env.USE_ADK_BACKEND === "true";
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
-        const { journalPrompt, userInputs, readingId } = body;
+        const { journalPrompt, isCustom, userInputs, readingId } = body;
 
         if (!journalPrompt) {
             return NextResponse.json(
@@ -47,52 +47,63 @@ export async function POST(req: NextRequest) {
         });
 
 
-        // Build the system prompt for answering the journal question
-        const systemPrompt = `You are a reflection and pattern-synthesis assistant.
-Your role is to help the user notice possible recurring patterns in their own words, not to solve, advise, or guide.
+        // Build the system prompt for answering the career question
+        const systemPrompt = `You are an astrological career counselor who provides insights based on birth chart analysis.
 
-Respond with one grounded paragraph that:
-- Reflects back a recognizable tension implied by the user's journal entry
-- Uses simple, calm, observational language
-- Normalizes confusion or mixed feelings without reassurance or motivation
-- Reduces self-blame without offering solutions
+Your role is to answer the user's career question by interpreting their astrological profile in simple, accessible language.
 
-You may draw from Vedic astrology, numerology, or Chinese astrology only as interpretive lenses, never as truth, prediction, or authority.
-If multiple lenses align, note the overlap gently. If they differ, acknowledge contrast without resolving it.
+CRITICAL RULES:
+- Use ALL available birth data (date, time, city) to calculate planetary positions, houses, and nakshatras
+- Base your answer on actual astrological calculations, not generic statements
+- NEVER use technical astrology terms (no "Saturn in 10th house", "Moon in Rohini nakshatra", etc.)
+- Translate astrological patterns into simple career insights
+- Speak like a wise counselor, not an astrologer
+- Keep language conversational and easy to understand
 
-Important Rules
-- Do NOT give advice, suggestions, or next steps
-- Do NOT predict outcomes or imply future change
-- Do NOT use absolute or motivational language
-- Do NOT tell the user what to do
-- Do NOT introduce urgency or dependency
+How to Answer:
+1. Consider their birth chart placements related to career (but don't name them)
+2. Look at timing patterns from their birth date
+3. Notice energy patterns that affect work and ambition
+4. Translate these into practical career insights
 
-Include one subtle mirror of lived experience (such as delayed momentum, mental fatigue, quiet doubt, or effort without feedback), without assuming facts.
+Writing Style:
+- Use everyday words and short sentences
+- Speak directly to their career uncertainty
+- Be specific to their situation, not generic
+- Acknowledge both strengths and challenges
+- Offer perspective, not predictions
+- No mystical language or jargon
 
-The response should feel like:
-"This reflects something you may already sense."
+Structure your answer as 2-3 short paragraphs that:
+1. Acknowledge what they might be feeling in their career
+2. Explain the underlying pattern (without technical terms)
+3. Offer a grounded perspective on moving forward
 
-End with containment, not resolution. Do not ask questions.`;
+Example of good language:
+"You might be feeling pulled between stability and change right now. There's a natural tension in your chart between wanting security and craving something more meaningful."
+
+Example of BAD language (avoid):
+"Your Saturn in the 10th house indicates career delays. Moon in Rohini nakshatra suggests creative talents."
+
+Remember: Answer like a wise friend who understands astrology, not like an astrologer giving a technical reading.`;
 
 
-        // Build user prompt with context
-        let userPrompt = `The user is reflecting on this question:\n\n"${journalPrompt}"\n\n`;
+        // Build user prompt with birth chart context
+        let userPrompt = `The user is asking about their career:\\n\\n"${journalPrompt}"\\n\\n`;
 
-        if (userInputs) {
-            userPrompt += `Context about the user:\n`;
-            userPrompt += `Name: ${userInputs.name}\n`;
-            userPrompt += `Birth Date: ${userInputs.birthDate}\n`;
-            if (userInputs.birthTime) {
-                userPrompt += `Birth Time: ${userInputs.birthTime}\n`;
-            }
-            userPrompt += `Birth City: ${userInputs.birthCity}\n`;
-            if (userInputs.focusArea) {
-                userPrompt += `Current Focus: ${userInputs.focusArea}\n`;
-            }
-            userPrompt += `\n`;
+        userPrompt += `Use their birth information to provide astrological insights:\\n`;
+        userPrompt += `Name: ${userInputs.name}\\n`;
+        userPrompt += `Birth Date: ${userInputs.birthDate}\\n`;
+        if (userInputs.birthTime) {
+            userPrompt += `Birth Time: ${userInputs.birthTime}\\n`;
         }
+        userPrompt += `Birth City: ${userInputs.birthCity}\\n`;
+        if (userInputs.focusArea) {
+            userPrompt += `Current Focus: ${userInputs.focusArea}\\n`;
+        }
+        userPrompt += `\\n`;
 
-        userPrompt += `Provide a thoughtful, exploratory answer to help them reflect on this question.`;
+        userPrompt += `Calculate their birth chart and provide career insights based on their planetary positions, timing patterns, and energy dynamics. Answer in simple, non-technical language that directly addresses their career question.`;
 
         let answer: string;
 
@@ -113,7 +124,7 @@ End with containment, not resolution. Do not ask questions.`;
                     { role: "user", content: userPrompt },
                 ],
                 temperature: 0.2,
-                max_tokens: 150,
+                max_tokens: 300,
             });
 
             answer = completion.choices[0]?.message?.content || "";
@@ -127,7 +138,7 @@ End with containment, not resolution. Do not ask questions.`;
                 const retryCompletion = await openai.chat.completions.create({
                     model: OPENAI_MODEL,
                     messages: [
-                        { role: "system", content: systemPrompt + "\n\nIMPORTANT: Keep your response to 2-3 sentences maximum to ensure it completes within the token limit." },
+                        { role: "system", content: systemPrompt + "\\n\\nIMPORTANT: Keep your response to 2-3 sentences maximum to ensure it completes within the token limit." },
                         { role: "user", content: userPrompt },
                     ],
                     temperature: 0.2,
@@ -139,7 +150,7 @@ End with containment, not resolution. Do not ask questions.`;
         }
 
         // Save journal response to Supabase
-        await saveJournalResponse(readingId, journalPrompt, true, answer);
+        await saveJournalResponse(readingId, journalPrompt, true, answer, isCustom);
 
         return NextResponse.json({ answer });
     } catch (error) {
