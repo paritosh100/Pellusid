@@ -18,10 +18,11 @@ interface JournalPromptProps {
 }
 
 const CAREER_QUESTIONS = [
-    "What are you most unsure about in your career right now?",
-    "What's holding you back from making a career change?",
-    "Where do you feel most stuck in your professional life?",
-    "What career decision are you avoiding?",
+    "What feels unclear or unsettled in your career right now?",
+    "Which career direction feels most conflicted for you at the moment?",
+    "What makes change feel harder than it should right now?",
+    "Is there a career decision you keep circling but not committing to?",
+    "What kind of work feels closer to \"right,\" even if you can’t explain why?",
 ];
 
 export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalPromptProps) {
@@ -216,7 +217,7 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalP
 
                         <div className="pt-4 border-t border-purple-200 dark:border-purple-700">
                             <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
-                                Astrological Insights
+                                Pattern Insights
                             </h3>
                             <div className="prose prose-sm dark:prose-invert max-w-none">
                                 <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">

@@ -157,7 +157,7 @@ Output Format (STRICT)
 Return ONLY valid JSON with the keys below. No markdown. No commentary. No extra text.
 
 {
-  "headline": "string – 6–12 words, situational not abstract",
+  "headline": "string – 3–4 words max, situational, sentence case (capitalize first letter only)",
   "coreTheme": "string – 3–4 short sentences following the CoreTheme Rule",
   "strengths": [
     "exactly 3 strings, each written as a single sentence, up to ~20 words"

@@ -146,7 +146,7 @@ CONTENT RULES:
 
 Output: JSON matching this EXACT schema:
 {
-  "headline": "string - 6–12 words",
+  "headline": "string - 3–4 words max, sentence case (capitalize first letter only)",
   "coreTheme": "string - 2–3 short sentences. Include one quiet mirror line.",
   "strengths": ["exactly 3 strings, each ≤ 12 words"],
   "watchOuts": ["exactly 2 strings, each ≤ 12 words"],
