@@ -1,17 +1,11 @@
 /**
  * Result Page - Display Generated Reading
- * Server component that fetches and renders insights
+ * Server component that fetches data and passes to client component
  */
 
 import { notFound } from "next/navigation";
 import { getReading } from "@/lib/storage";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { ShareButton } from "@/components/share-button";
-import { RegenerateButton } from "@/components/regenerate-button";
-import { JournalPrompt } from "@/components/journal-prompt";
-import { FeedbackWidget } from "@/components/feedback-widget";
-import { SectionFeedback } from "@/components/section-feedback";
-import { AppNameFeedback } from "@/components/app-name-feedback";
+import { ResultClient } from "@/components/result-client";
 
 // Force dynamic rendering (required for Vercel deployment)
 export const dynamic = "force-dynamic";
@@ -39,126 +33,22 @@ export default async function ResultPage({ searchParams }: ResultPageProps) {
     const { reading, inputs } = storedReading;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#8ae1fc]/10 via-[#50ffb1]/10 to-[#3c896d]/10 dark:from-[#4d685a] dark:via-[#546d64] dark:to-[#3c896d]">
-            <div className="container mx-auto px-4 py-8 max-w-3xl">
-                {/* Header */}
-                <div className="text-center mb-8 space-y-3">
-                    <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-gray-100">
-                        {reading.headline}
-                    </h1>
-                </div>
+        <div className="relative min-h-screen w-full overflow-hidden bg-[#0a0a0c] text-white selection:bg-teal-500/30">
+            {/* Noise Layer */}
+            <div className="fixed inset-0 pointer-events-none z-[1] opacity-[0.05]"
+                style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulance type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")` }}
+            />
 
-                {/* Action Buttons */}
-                <div className="flex flex-wrap justify-center gap-4 mb-8">
-                    <ShareButton />
-                    <RegenerateButton inputs={inputs} />
-                </div>
+            {/* Static Background Blobs */}
+            <div className="fixed inset-0 z-0 overflow-hidden">
+                <div className="absolute -top-[20%] -left-[10%] w-[80vw] h-[80vw] bg-[#1e1b4b] rounded-full mix-blend-screen blur-[120px] opacity-60" />
+                <div className="absolute top-[40%] -right-[20%] w-[60vw] h-[60vw] bg-[#0d9488] rounded-full mix-blend-screen blur-[100px] opacity-40" />
+                <div className="absolute bottom-[-10%] left-[20%] w-[50vw] h-[50vw] bg-[#3c896d]/20 rounded-full mix-blend-screen blur-[80px]" />
+            </div>
 
-                {/* Core Theme */}
-                <Card className="mb-6 shadow-lg border-0 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm">
-                    <CardHeader className="pb-3">
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl">Core Theme</CardTitle>
-                            <SectionFeedback section="coreTheme" readingId={readingId} />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-lg leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-line">
-                            {reading.coreTheme}
-                        </p>
-                    </CardContent>
-                </Card>
-
-                {/* Strengths */}
-                <Card className="mb-6 shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl">What's Working</CardTitle>
-                            <SectionFeedback section="strengths" readingId={readingId} />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-2">
-                            {reading.strengths.map((strength, index) => (
-                                <li key={index} className="flex items-start gap-3">
-                                    <span className="text-green-600 dark:text-green-400 mt-1 text-lg">✓</span>
-                                    <span className="text-gray-700 dark:text-gray-300">{strength}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
-
-                {/* Frictions */}
-                <Card className="mb-6 shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <CardTitle className="text-xl">Energy Drains</CardTitle>
-                            <SectionFeedback section="frictions" readingId={readingId} />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-2">
-                            {reading.frictions.map((friction, index) => (
-                                <li key={index} className="flex items-start gap-3">
-                                    <span className="text-amber-600 dark:text-amber-400 mt-1 text-lg">⚠</span>
-                                    <span className="text-gray-700 dark:text-gray-300">{friction}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
-
-                {/* Next 7 Days */}
-                <Card className="mb-6 shadow-lg border-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
-                    <CardHeader>
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <CardTitle className="text-xl">Next 7 Days</CardTitle>
-                                <CardDescription>Focus areas to consider</CardDescription>
-                            </div>
-                            <SectionFeedback section="next7Days" readingId={readingId} />
-                        </div>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-2">
-                            {reading.next7Days.map((focus, index) => (
-                                <li key={index} className="flex items-start gap-3">
-                                    <span className="text-[#3c896d] dark:text-[#50ffb1] mt-1 font-bold">
-                                        {index + 1}.
-                                    </span>
-                                    <span className="text-gray-700 dark:text-gray-300">{focus}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </CardContent>
-                </Card>
-
-                {/* Journal Prompt */}
-                <JournalPrompt journalPrompt={reading.journalPrompt} userInputs={inputs} readingId={readingId} />
-
-                {/* App Name Feedback */}
-                <AppNameFeedback />
-
-                {/* Feedback Widget */}
-                <FeedbackWidget readingId={readingId} />
-
-                {/* Disclaimer */}
-                <div className="text-center p-6 bg-gray-100 dark:bg-gray-800 rounded-lg">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                        {reading.disclaimer}
-                    </p>
-                </div>
-
-                {/* Back to Home */}
-                <div className="text-center mt-8">
-                    <a
-                        href="/"
-                        className="text-[#3c896d] dark:text-[#50ffb1] hover:underline font-medium"
-                    >
-                        ← Generate Another Reading
-                    </a>
-                </div>
+            {/* Client Component */}
+            <div className="relative z-10">
+                <ResultClient reading={reading} inputs={inputs} readingId={readingId} />
             </div>
         </div>
     );

@@ -15,6 +15,9 @@ interface JournalPromptProps {
     journalPrompt: string;
     userInputs: UserInput;
     readingId: string;
+    savedAnswer?: string | null;
+    savedQuestion?: string | null;
+    onAnswerGenerated?: (question: string, answer: string) => void;
 }
 
 const CAREER_QUESTIONS = [
@@ -22,15 +25,15 @@ const CAREER_QUESTIONS = [
     "Which career direction feels most conflicted for you at the moment?",
     "What makes change feel harder than it should right now?",
     "Is there a career decision you keep circling but not committing to?",
-    "What kind of work feels closer to \"right,\" even if you can’t explain why?",
+    "What kind of work feels closer to \"right,\" even if you can't explain why?",
 ];
 
-export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalPromptProps) {
-    const [showOptions, setShowOptions] = useState(true);
-    const [selectedQuestion, setSelectedQuestion] = useState<string | null>(null);
+export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswer, savedQuestion, onAnswerGenerated }: JournalPromptProps) {
+    const [showOptions, setShowOptions] = useState(!savedAnswer);
+    const [selectedQuestion, setSelectedQuestion] = useState<string | null>(savedQuestion || null);
     const [customQuestion, setCustomQuestion] = useState("");
     const [showCustomInput, setShowCustomInput] = useState(false);
-    const [answer, setAnswer] = useState<string | null>(null);
+    const [answer, setAnswer] = useState<string | null>(savedAnswer || null);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -77,6 +80,11 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalP
 
             setAnswer(data.answer);
             setShowOptions(false);
+
+            // Notify parent component to persist the answer
+            if (onAnswerGenerated) {
+                onAnswerGenerated(questionToAsk, data.answer);
+            }
         } catch (err) {
             console.error("Error generating answer:", err);
             setError(err instanceof Error ? err.message : "An unexpected error occurred");
@@ -100,7 +108,7 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalP
             <CardContent className="space-y-4">
                 {showOptions && !answer && (
                     <>
-                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                        <p className="text-sm text-white mb-4" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>
                             Choose a question to explore, or ask your own:
                         </p>
 
@@ -111,11 +119,11 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalP
                                     key={index}
                                     onClick={() => handleQuestionSelect(question)}
                                     className={`w-full text-left p-3 rounded-lg border-2 transition-all duration-200 ${selectedQuestion === question
-                                        ? "border-[#3c896d] dark:border-[#50ffb1] bg-[#50ffb1]/10 dark:bg-[#3c896d]/20"
-                                        : "border-gray-200 dark:border-gray-700 hover:border-[#3c896d]/50 dark:hover:border-[#50ffb1]/50"
+                                        ? "border-teal-400 bg-teal-500/20"
+                                        : "border-white/20 hover:border-teal-400/60 hover:bg-teal-500/10"
                                         }`}
                                 >
-                                    <p className="text-sm text-gray-700 dark:text-gray-300">
+                                    <p className="text-sm text-white" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
                                         {question}
                                     </p>
                                 </button>
@@ -126,9 +134,9 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalP
                         {!showCustomInput ? (
                             <button
                                 onClick={handleCustomQuestionClick}
-                                className="w-full text-left p-3 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-[#3c896d] dark:hover:border-[#50ffb1] transition-all duration-200"
+                                className="w-full text-left p-3 rounded-lg border-2 border-dashed border-white/30 hover:border-teal-400/60 hover:bg-teal-500/10 transition-all duration-200"
                             >
-                                <p className="text-sm text-gray-600 dark:text-gray-400 italic">
+                                <p className="text-sm text-white italic" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
                                     ✏️ Ask your own question...
                                 </p>
                             </button>
@@ -165,7 +173,8 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalP
                             <Button
                                 onClick={handleExplore}
                                 disabled={isLoading || (!selectedQuestion && !customQuestion.trim())}
-                                className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white px-6 py-2 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                                style={{ textShadow: '0 0 10px rgba(255,255,255,0.4)' }}
                             >
                                 {isLoading ? (
                                     <span className="flex items-center gap-2">
@@ -195,7 +204,8 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalP
                                 onClick={handleSkip}
                                 disabled={isLoading}
                                 variant="outline"
-                                className="px-6 py-2 border-2 border-gray-300 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300"
+                                className="px-6 py-2 border-2 border-teal-400/50 bg-black/20 text-white hover:bg-teal-500/20 hover:border-teal-400 transition-all duration-300"
+                                style={{ textShadow: '0 0 10px rgba(255,255,255,0.4)' }}
                             >
                                 Skip
                             </Button>
@@ -206,21 +216,21 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId }: JournalP
                 {/* Answer Display */}
                 {answer && (
                     <div className="space-y-4">
-                        <div className="p-4 bg-[#50ffb1]/10 dark:bg-[#3c896d]/20 rounded-lg border border-[#50ffb1]/30 dark:border-[#3c896d]/30">
-                            <p className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        <div className="p-4 bg-teal-900/30 rounded-lg border border-teal-500/30">
+                            <p className="text-sm font-medium text-white mb-2" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>
                                 Your Question:
                             </p>
-                            <p className="text-base italic text-gray-800 dark:text-gray-200">
+                            <p className="text-base italic text-white" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
                                 {selectedQuestion || customQuestion || journalPrompt}
                             </p>
                         </div>
 
-                        <div className="pt-4 border-t border-purple-200 dark:border-purple-700">
-                            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-3">
+                        <div className="pt-4 border-t border-teal-500/30">
+                            <h3 className="text-lg font-semibold text-white mb-3" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>
                                 Pattern Insights
                             </h3>
                             <div className="prose prose-sm dark:prose-invert max-w-none">
-                                <p className="text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
+                                <p className="text-white leading-relaxed whitespace-pre-line text-base" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
                                     {answer}
                                 </p>
                             </div>

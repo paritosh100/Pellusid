@@ -5,6 +5,7 @@
  */
 
 import SwissEPH from 'sweph-wasm';
+import path from 'path';
 
 export interface PlanetPosition {
     longitude: number;
@@ -90,9 +91,39 @@ let sweph: Awaited<ReturnType<typeof SwissEPH.init>> | null = null;
 
 async function getSweph() {
     if (!sweph) {
-        // Provide explicit path to WASM file in public directory
-        sweph = await SwissEPH.init('/public/wasm/swisseph.wasm');
-        await sweph.swe_set_ephe_path(); // Initialize ephemeris path
+        try {
+            // Provide explicit path to WASM file in public directory (Server-side compatible)
+            const wasmPath = path.join(process.cwd(), 'public', 'wasm', 'swisseph.wasm');
+
+            // Read as buffer to avoid fetch API issues in Node environment
+            // Use dynamic import to avoid bundling issues
+            const fs = await import('fs');
+
+            // Defensively check if file exists
+            if (!fs.existsSync(wasmPath)) {
+                console.error(`WASM file not found at: ${wasmPath}`);
+                throw new Error("WASM file missing");
+            }
+
+            const wasmBuffer = fs.readFileSync(wasmPath);
+
+            const wasmBinary = new Uint8Array(wasmBuffer);
+
+            // Initialize with Uint8Array
+            // Cast to any to bypass TS types that expect string/URL
+            const instance = await SwissEPH.init(wasmBinary as any);
+
+            if (instance) {
+                sweph = instance;
+                await sweph.swe_set_ephe_path(); // Initialize ephemeris path
+            } else {
+                throw new Error("SwissEPH.init returned null/undefined");
+            }
+        } catch (error) {
+            console.error("Failed to initialize Swiss Ephemeris WASM:", error);
+            // Verify if we can recover or if we should leave sweph as null
+            // Leaving as null will cause getSweph to try again or caller to handle it
+        }
     }
     return sweph;
 }
@@ -151,6 +182,7 @@ export async function calculatePlanetaryPositions(
 
     try {
         const swe = await getSweph();
+        if (!swe) throw new Error("SwissEPH not initialized");
 
         // Parse date and time
         const [year, month, day] = birthDate.split('-').map(Number);
@@ -208,6 +240,7 @@ export async function calculateAscendant(
 ): Promise<AscendantInfo> {
     try {
         const swe = await getSweph();
+        if (!swe) throw new Error("SwissEPH not initialized");
 
         // Parse date and time
         const [year, month, day] = birthDate.split('-').map(Number);

@@ -41,8 +41,8 @@ export function FeedbackWidget({ readingId }: FeedbackWidgetProps) {
 
     if (isSubmitted) {
         return (
-            <div className="p-6 text-center bg-green-50 dark:bg-green-900/20 rounded-lg">
-                <p className="text-green-700 dark:text-green-300">
+            <div className="p-3 text-center bg-teal-900/30 border border-teal-500/30 rounded-lg">
+                <p className="text-xs text-teal-200" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
                     ✓ Thank you for your feedback!
                 </p>
             </div>
@@ -50,13 +50,13 @@ export function FeedbackWidget({ readingId }: FeedbackWidgetProps) {
     }
 
     return (
-        <div className="space-y-6 p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+        <div className="space-y-3 p-3 bg-[#0f2f2a]/60 backdrop-blur-sm rounded-lg border border-teal-500/20">
             {/* Overall Rating */}
             <div>
-                <label className="text-base font-semibold mb-3 block text-gray-900 dark:text-gray-100">
+                <label className="text-xs font-semibold mb-2 block text-white" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
                     Overall rating
                 </label>
-                <div className="flex gap-2">
+                <div className="flex gap-1.5">
                     {[1, 2, 3, 4, 5].map((star) => (
                         <button
                             key={star}
@@ -64,9 +64,9 @@ export function FeedbackWidget({ readingId }: FeedbackWidgetProps) {
                             className="transition-transform hover:scale-110"
                         >
                             <Star
-                                className={`h-8 w-8 ${star <= rating
-                                        ? 'fill-yellow-400 text-yellow-400'
-                                        : 'text-gray-300 dark:text-gray-600'
+                                className={`h-6 w-6 ${star <= rating
+                                    ? 'fill-yellow-400 text-yellow-400'
+                                    : 'text-gray-500'
                                     }`}
                             />
                         </button>
@@ -76,19 +76,19 @@ export function FeedbackWidget({ readingId }: FeedbackWidgetProps) {
 
             {/* Text Feedback */}
             <div>
-                <label className="text-base font-semibold mb-3 block text-gray-900 dark:text-gray-100">
+                <label className="text-xs font-semibold mb-2 block text-white" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
                     What would make this more helpful?
                 </label>
                 <Textarea
                     placeholder="Share your thoughts..."
                     value={feedbackText}
                     onChange={(e) => setFeedbackText(e.target.value)}
-                    maxLength={1000}
-                    rows={4}
-                    className="resize-none"
+                    maxLength={500}
+                    rows={3}
+                    className="resize-none text-xs bg-black/30 border-white/10 text-white placeholder:text-gray-400 focus:border-teal-400/50 focus:ring-teal-400/50"
                 />
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                    {feedbackText.length}/1000 characters
+                <p className="text-[10px] text-gray-400 mt-1">
+                    {feedbackText.length}/500 characters
                 </p>
             </div>
 
@@ -96,8 +96,9 @@ export function FeedbackWidget({ readingId }: FeedbackWidgetProps) {
             <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting || !rating}
-                className="w-full bg-gray-600 hover:bg-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600"
-                size="lg"
+                className="w-full bg-teal-600/80 hover:bg-teal-600 text-white text-xs py-2 border border-teal-500/30 shadow-lg"
+                size="sm"
+                style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}
             >
                 {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
             </Button>

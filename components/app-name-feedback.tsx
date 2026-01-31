@@ -64,16 +64,16 @@ export function AppNameFeedback() {
 
     if (submitted) {
         return (
-            <Card className="mb-6 shadow-lg border-2 border-[#50ffb1]/30 bg-gradient-to-br from-white/95 to-[#50ffb1]/5 dark:from-gray-800/95 dark:to-[#3c896d]/10 backdrop-blur-sm">
-                <CardContent className="pt-6 text-center">
-                    <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#50ffb1]/20 mb-3">
-                        <Sparkles className="w-6 h-6 text-[#3c896d] dark:text-[#50ffb1]" />
+            <Card className="shadow-lg border border-teal-500/20 bg-[#0f2f2a]/60 backdrop-blur-sm">
+                <CardContent className="pt-4 pb-3 text-center">
+                    <div className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-teal-500/20 mb-2">
+                        <Sparkles className="w-4 h-4 text-teal-300" />
                     </div>
-                    <p className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                    <p className="text-sm font-medium text-white" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>
                         Thanks for your feedback!
                     </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                        Your vote for <span className="font-semibold text-[#3c896d] dark:text-[#50ffb1]">
+                    <p className="text-xs text-gray-300 mt-1">
+                        Your vote for <span className="font-semibold text-teal-300">
                             {APP_NAME_OPTIONS.find(opt => opt.id === selectedName)?.name}
                         </span> has been recorded.
                     </p>
@@ -83,48 +83,48 @@ export function AppNameFeedback() {
     }
 
     return (
-        <Card className="mb-6 shadow-lg border-2 border-[#50ffb1]/30 bg-gradient-to-br from-white/95 to-[#50ffb1]/5 dark:from-gray-800/95 dark:to-[#3c896d]/10 backdrop-blur-sm">
-            <CardHeader>
+        <Card className="shadow-lg border border-teal-500/20 bg-[#0f2f2a]/60 backdrop-blur-sm">
+            <CardHeader className="pb-2 pt-3 px-3">
                 <div className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-[#3c896d] dark:text-[#50ffb1]" />
-                    <CardTitle className="text-xl">Help Us Choose a Name!</CardTitle>
+                    <Sparkles className="w-4 h-4 text-teal-300" />
+                    <CardTitle className="text-sm text-white" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>
+                        Help Us Choose a Name!
+                    </CardTitle>
                 </div>
-                <CardDescription>
+                <CardDescription className="text-xs text-gray-300">
                     Which name resonates most with you?
                 </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 pb-3">
                 {error && (
-                    <div className="mb-4 p-3 rounded-lg bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800">
-                        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+                    <div className="mb-2 p-2 rounded-lg bg-red-900/30 border border-red-500/30">
+                        <p className="text-xs text-red-300">{error}</p>
                     </div>
                 )}
-                <div className="grid gap-3">
+                <div className="grid gap-2">
                     {APP_NAME_OPTIONS.map((option) => (
                         <button
                             key={option.id}
                             onClick={() => handleVote(option.id)}
                             disabled={loading}
-                            className="group relative p-4 rounded-lg border-2 border-gray-200 dark:border-gray-700 
-                                     hover:border-[#3c896d] dark:hover:border-[#50ffb1] 
-                                     hover:bg-[#50ffb1]/5 dark:hover:bg-[#3c896d]/10
+                            className="group relative p-2.5 rounded-lg border-2 border-white/10
+                                     hover:border-teal-400/50 hover:bg-teal-500/10
                                      transition-all duration-200 text-left
-                                     focus:outline-none focus:ring-2 focus:ring-[#3c896d] dark:focus:ring-[#50ffb1]
+                                     focus:outline-none focus:ring-2 focus:ring-teal-400/50
                                      disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             <div className="flex items-center justify-between">
                                 <div>
-                                    <h3 className="font-semibold text-lg text-gray-900 dark:text-gray-100 
-                                                 group-hover:text-[#3c896d] dark:group-hover:text-[#50ffb1] 
-                                                 transition-colors">
+                                    <h3 className="font-semibold text-sm text-white group-hover:text-teal-200 transition-colors"
+                                        style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
                                         {option.name}
                                     </h3>
-                                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                                    <p className="text-[10px] text-gray-300 mt-0.5">
                                         {option.description}
                                     </p>
                                 </div>
-                                <div className="w-6 h-6 rounded-full border-2 border-gray-300 dark:border-gray-600 
-                                              group-hover:border-[#3c896d] dark:group-hover:border-[#50ffb1]
+                                <div className="w-5 h-5 rounded-full border-2 border-white/20 
+                                              group-hover:border-teal-400/50
                                               transition-colors" />
                             </div>
                         </button>
