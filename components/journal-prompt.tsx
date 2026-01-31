@@ -98,11 +98,13 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswe
     };
 
     return (
-        <Card className="mb-6 shadow-lg border-0 bg-gradient-to-br from-[#50ffb1]/20 to-[#8ae1fc]/20 dark:from-[#3c896d]/40 dark:to-[#546d64]/40">
-            <CardHeader>
-                <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl">Career Reflection</CardTitle>
-                    <SectionFeedback section="journalPrompt" readingId={readingId} />
+        <Card className="mb-0 sm:mb-6 shadow-none sm:shadow-lg border-0 bg-transparent sm:bg-gradient-to-br from-[#50ffb1]/20 to-[#8ae1fc]/20 dark:from-[#3c896d]/40 dark:to-[#546d64]/40">
+            <CardHeader className="pb-2">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                    <CardTitle className="text-xl font-bold bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent">Career Reflection</CardTitle>
+                    <div className="self-end sm:self-auto">
+                        <SectionFeedback section="journalPrompt" readingId={readingId} />
+                    </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -118,12 +120,12 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswe
                                 <button
                                     key={index}
                                     onClick={() => handleQuestionSelect(question)}
-                                    className={`w-full text-left p-3 rounded-lg border-2 transition-all duration-200 ${selectedQuestion === question
+                                    className={`w-full text-left p-2 sm:p-3 rounded-lg border-2 transition-all duration-200 ${selectedQuestion === question
                                         ? "border-teal-400 bg-teal-500/20"
                                         : "border-white/20 hover:border-teal-400/60 hover:bg-teal-500/10"
                                         }`}
                                 >
-                                    <p className="text-sm text-white" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
+                                    <p className="text-sm text-white leading-relaxed" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
                                         {question}
                                     </p>
                                 </button>
@@ -134,7 +136,7 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswe
                         {!showCustomInput ? (
                             <button
                                 onClick={handleCustomQuestionClick}
-                                className="w-full text-left p-3 rounded-lg border-2 border-dashed border-white/30 hover:border-teal-400/60 hover:bg-teal-500/10 transition-all duration-200"
+                                className="w-full text-left p-2 sm:p-3 rounded-lg border-2 border-dashed border-white/30 hover:border-teal-400/60 hover:bg-teal-500/10 transition-all duration-200"
                             >
                                 <p className="text-sm text-white italic" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
                                     ✏️ Ask your own question...

@@ -82,7 +82,7 @@ export function SectionFeedback({ section, readingId }: SectionFeedbackProps) {
                     onClick={() => handleReaction(type)}
                     disabled={isSubmitting}
                     className={`
-            h-7 px-3 rounded-full text-xs font-medium transition-all border
+            h-6 px-2.5 sm:h-7 sm:px-3 rounded-full text-[10px] sm:text-xs font-medium transition-all border
             ${selectedReaction === type
                             ? selectedBg
                             : `bg-white dark:bg-gray-900 ${textColor} ${borderColor} ${hoverBg}`
