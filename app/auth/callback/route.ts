@@ -13,7 +13,11 @@ export async function GET(request: NextRequest) {
 
     if (code) {
         const supabase = await createClient()
-        await supabase.auth.exchangeCodeForSession(code)
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        if (error) {
+            console.error('Auth Code Exchange Error:', error)
+            return NextResponse.redirect(`${origin}/login?error=auth_code_error`)
+        }
     }
 
     // Redirect to home page without the code parameter

@@ -253,9 +253,9 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         </a>
                         <button
                             onClick={() => setIsRightPanelOpen(true)}
-                            className="p-2 bg-white/5 rounded-full text-teal-300 hover:text-white hover:bg-white/10 transition-all border border-white/10"
+                            className="px-3 py-1.5 bg-white/5 rounded-lg text-teal-300 hover:text-white hover:bg-white/10 transition-all border border-white/10 text-xs font-medium"
                         >
-                            <MessageSquare className="w-4 h-4" />
+                            we need your feedback!
                         </button>
                     </div>
                     <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
