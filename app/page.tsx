@@ -63,7 +63,7 @@ const MagneticButton = ({ children, onClick, className, disabled, type = "button
         className
       )}
     >
-      <span className="relative z-10 flex items-center gap-2 group-hover:text-teal-200 transition-colors duration-300">
+      <span className="relative z-10 flex items-center justify-center gap-2 group-hover:text-teal-200 transition-colors duration-300">
         {children}
       </span>
       <div className="absolute inset-0 -z-10 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:animate-scannner" />
@@ -174,6 +174,38 @@ export default function HomePage() {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, [mouseX, mouseY]);
 
+  // Pre-fill form with user data from latest reading
+  useEffect(() => {
+    async function fetchUserData() {
+      if (!user) {
+        setName("");
+        setBirthDate("");
+        setBirthTime("");
+        setBirthCity("");
+        setFocusArea("");
+        return;
+      }
+
+      const supabase = createClient();
+      const { data, error } = await supabase
+        .from('readings')
+        .select('name, birth_date, birth_time, birth_city')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single();
+
+      if (data && !error) {
+        setName(data.name || "");
+        setBirthDate(data.birth_date || "");
+        setBirthTime(data.birth_time || "");
+        setBirthCity(data.birth_city || "");
+      }
+    }
+
+    fetchUserData();
+  }, [user]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -252,7 +284,7 @@ export default function HomePage() {
 
 
       {/* --- II. Layout: Presence & Motion Container --- */}
-      <div className="relative z-10 container mx-auto px-6 py-12 min-h-screen flex flex-col justify-center">
+      <div className="relative z-10 container mx-auto px-6 pt-32 pb-12 md:py-12 min-h-screen flex flex-col justify-start md:justify-center">
 
         {/* --- Navigation: Command Hub --- */}
         <motion.header
@@ -263,10 +295,10 @@ export default function HomePage() {
         >
           <div className="mx-auto bg-white/5 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 flex items-center justify-between shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] transition-all duration-500 hover:bg-white/10">
             <Link href="/" className="group">
-              <span className="text-xl font-bold tracking-tighter bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent group-hover:to-teal-100 transition-all">
+              <span className="text-lg md:text-xl font-bold tracking-tighter bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent group-hover:to-teal-100 transition-all">
                 PELLUCID
               </span>
-              <span className="ml-2 text-xs text-white/40 tracking-[0.2em]">INSIGHTS</span>
+              <span className="ml-2 text-xs text-white/40 tracking-[0.2em] hidden md:inline">INSIGHTS</span>
             </Link>
 
             <div className="flex items-center gap-4">
@@ -274,7 +306,7 @@ export default function HomePage() {
                 <UserMenu user={user} />
               ) : (
                 <>
-                  <Link href="/login" className="text-xs text-white/60 hover:text-white transition-colors uppercase tracking-widest hidden md:block">
+                  <Link href="/login" className="text-xs text-white/60 hover:text-white transition-colors uppercase tracking-widest block">
                     Login
                   </Link>
                   <Link href="/signup">
@@ -318,7 +350,7 @@ export default function HomePage() {
 
 
           {/* Right Col: The Form (Anti-Grid Structure) */}
-          <div className="md:col-span-1"></div> {/* Spacer to break grid */}
+          {/* <div className="md:col-span-1"></div> Spacer to break grid */}
 
           <div className="md:col-span-5 relative mt-12 md:mt-0">
             <motion.div
@@ -358,10 +390,11 @@ export default function HomePage() {
                     />
                     <ExpandingInput
                       id="birthTime"
-                      label="Birth Time (Optional)"
+                      label="Birth Time (24 hour)"
                       type="time"
                       value={birthTime}
                       onChange={(e: any) => setBirthTime(e.target.value)}
+                      required
                     />
                   </div>
 
@@ -393,7 +426,7 @@ export default function HomePage() {
                   )}
                 </AnimatePresence>
 
-                <div className="pt-4 flex justify-end">
+                <div className="pt-4 flex justify-center">
                   <MagneticButton
                     type="submit"
                     disabled={isLoading}
