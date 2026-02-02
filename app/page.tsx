@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { UserMenu } from "@/components/user-menu";
+import { CityAutocomplete } from "@/components/city-autocomplete";
 import type { User } from "@supabase/supabase-js";
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, useMotionTemplate } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -143,6 +144,10 @@ export default function HomePage() {
   const [birthCity, setBirthCity] = useState("");
   const [focusArea, setFocusArea] = useState("");
 
+  // Birth time confirmation dialog state
+  const [showBirthTimeDialog, setShowBirthTimeDialog] = useState(false);
+  const [proceedWithoutBirthTime, setProceedWithoutBirthTime] = useState(false);
+
   // Mouse / Interaction state
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
@@ -206,8 +211,7 @@ export default function HomePage() {
     fetchUserData();
   }, [user]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const submitReading = async () => {
     setError(null);
     setIsLoading(true);
     setRippleActive(true);
@@ -251,6 +255,19 @@ export default function HomePage() {
       setIsLoading(false);
       setRippleActive(false);
     }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Check if birth time is missing and user hasn't confirmed to proceed without it
+    if (!birthTime.trim() && !proceedWithoutBirthTime) {
+      setShowBirthTimeDialog(true);
+      return;
+    }
+
+    // Proceed with submission
+    await submitReading();
   };
 
   // Background Gradients
@@ -393,19 +410,22 @@ export default function HomePage() {
                       label="Birth Time (24 hour)"
                       type="time"
                       value={birthTime}
-                      onChange={(e: any) => setBirthTime(e.target.value)}
-                      required
+                      onChange={(e: any) => {
+                        setBirthTime(e.target.value);
+                        // Reset the flag if user manually adds birth time
+                        if (e.target.value && proceedWithoutBirthTime) {
+                          setProceedWithoutBirthTime(false);
+                        }
+                      }}
                     />
                   </div>
 
-                  <ExpandingInput
+                  <CityAutocomplete
                     id="birthCity"
                     label="Birth City"
-                    type="text"
                     value={birthCity}
-                    onChange={(e: any) => setBirthCity(e.target.value)}
+                    onChange={setBirthCity}
                     required
-                    maxLength={100}
                     placeholder="City, Country"
                   />
                 </div>
@@ -456,6 +476,98 @@ export default function HomePage() {
         </div>
 
       </div>
+
+      {/* Birth Time Confirmation Dialog */}
+      <AnimatePresence>
+        {showBirthTimeDialog && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setShowBirthTimeDialog(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, y: 20, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.9, y: 20, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative bg-black/60 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 md:p-10 max-w-md w-full shadow-[0_20px_60px_-12px_rgba(0,0,0,0.8)]"
+            >
+              {/* Corner accents */}
+              <div className="absolute top-0 left-0 w-12 h-12 border-t border-l border-teal-500/40 rounded-tl-3xl" />
+              <div className="absolute bottom-0 right-0 w-12 h-12 border-b border-r border-teal-500/40 rounded-br-3xl" />
+
+              {/* Content */}
+              <div className="space-y-6">
+                <div className="text-center space-y-3">
+                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-teal-500/10 border border-teal-500/30 mb-2">
+                    <svg className="w-8 h-8 text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <h3 className="text-2xl font-bold text-white tracking-tight">
+                    Birth Time Not Provided
+                  </h3>
+                </div>
+
+                <div className="space-y-4 text-white/70 text-sm leading-relaxed">
+                  <p className="border-l-2 border-teal-500/30 pl-4">
+                    If you skip this, your reflection will focus on <span className="text-white font-medium">broader life patterns</span> rather than precise timing.
+                  </p>
+                  <p className="border-l-2 border-purple-500/30 pl-4">
+                    If you ever find or remember your birth time, you can add it later for more detail.
+                  </p>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="space-y-3 pt-4">
+                  <button
+                    onClick={() => {
+                      setProceedWithoutBirthTime(true);
+                      setShowBirthTimeDialog(false);
+                      // Trigger submission after state update
+                      setTimeout(() => {
+                        submitReading();
+                      }, 0);
+                    }}
+                    className="w-full px-6 py-4 rounded-2xl font-medium text-sm tracking-wide uppercase transition-all duration-300 bg-white/5 backdrop-blur-md border border-white/10 hover:bg-teal-500/10 hover:border-teal-500/30 hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.3)] text-white group"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="w-5 h-5 group-hover:text-teal-400 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                      </svg>
+                      I don't know my birth time
+                    </span>
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setShowBirthTimeDialog(false);
+                      // Focus on birth time input
+                      setTimeout(() => {
+                        document.getElementById('birthTime')?.focus();
+                      }, 100);
+                    }}
+                    className="w-full px-6 py-4 rounded-2xl font-medium text-sm tracking-wide uppercase transition-all duration-300 bg-teal-500/20 backdrop-blur-md border border-teal-500/40 hover:bg-teal-500/30 hover:border-teal-500/50 hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] text-teal-200 group"
+                  >
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      I know / want to add it
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Decorative glow */}
+              <div className="absolute inset-0 -z-10 rounded-3xl bg-gradient-to-br from-teal-500/10 via-transparent to-purple-500/10 blur-2xl" />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <style jsx global>{`
         .glow-text {
