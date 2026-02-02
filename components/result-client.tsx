@@ -5,13 +5,14 @@
  * Dashboard layout with improved contrast and compact right sidebar
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShareButton } from "@/components/share-button";
 import { RegenerateButton } from "@/components/regenerate-button";
 import { JournalPrompt } from "@/components/journal-prompt";
 import { FeedbackWidget } from "@/components/feedback-widget";
 import { SectionFeedback } from "@/components/section-feedback";
 import { AppNameFeedback } from "@/components/app-name-feedback";
+import { WelcomeCard } from "@/components/welcome-card";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { MessageSquare, X } from "lucide-react";
@@ -29,6 +30,24 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
     const [journalAnswer, setJournalAnswer] = useState<string | null>(null);
     const [journalQuestion, setJournalQuestion] = useState<string | null>(null);
     const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
+    const [showWelcomeCard, setShowWelcomeCard] = useState(false);
+
+    // Check if this is the user's first visit to this reading
+    useEffect(() => {
+        const storageKey = `reading-welcomed-${readingId}`;
+        const hasSeenWelcome = localStorage.getItem(storageKey);
+
+        if (!hasSeenWelcome) {
+            setShowWelcomeCard(true);
+        }
+    }, [readingId]);
+
+    // Handle welcome card dismissal
+    const handleDismissWelcome = () => {
+        const storageKey = `reading-welcomed-${readingId}`;
+        localStorage.setItem(storageKey, 'true');
+        setShowWelcomeCard(false);
+    };
 
     const handleAnswerGenerated = (question: string, answer: string) => {
         setJournalQuestion(question);
@@ -60,7 +79,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                             <SectionFeedback section="coreTheme" readingId={readingId} />
                         </div>
                         <div className="flex-1 overflow-y-auto pr-2">
-                            <p className="text-sm leading-relaxed text-gray-100 whitespace-pre-line">
+                            <p className="text-base leading-relaxed text-gray-100 whitespace-pre-line">
                                 {reading.coreTheme}
                             </p>
                         </div>
@@ -94,7 +113,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                         className="flex items-start gap-3"
                                     >
                                         <span className="text-green-400 mt-0 text-lg flex-shrink-0 leading-none">✓</span>
-                                        <span className="text-gray-100 text-sm leading-relaxed">{strength}</span>
+                                        <span className="text-gray-100 text-base leading-relaxed">{strength}</span>
                                     </motion.li>
                                 ))}
                             </ul>
@@ -129,7 +148,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                         className="flex items-start gap-3"
                                     >
                                         <span className="text-amber-400 mt-0 text-lg flex-shrink-0 leading-none">⚠</span>
-                                        <span className="text-gray-100 text-sm leading-relaxed">{friction}</span>
+                                        <span className="text-gray-100 text-base leading-relaxed">{friction}</span>
                                     </motion.li>
                                 ))}
                             </ul>
@@ -169,7 +188,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                         <span className="text-teal-300 mt-0 font-bold text-base flex-shrink-0 leading-none">
                                             {index + 1}.
                                         </span>
-                                        <span className="text-gray-100 text-sm leading-relaxed">{focus}</span>
+                                        <span className="text-gray-100 text-base leading-relaxed">{focus}</span>
                                     </motion.li>
                                 ))}
                             </ul>
@@ -289,22 +308,32 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         </h1>
                     </div>
 
+
                     {/* Dynamic Content - Flexible height with darker background */}
                     <div className={cn(
                         "flex-1 sm:bg-[#0f2f2a]/40 sm:backdrop-blur-md sm:border sm:border-teal-500/20 sm:rounded-xl lg:p-6 min-h-0 mb-3",
                         activeSection === 'journal' ? "p-0 sm:p-4" : "p-4"
                     )}>
                         <AnimatePresence mode="wait">
-                            {renderContent()}
+                            {showWelcomeCard ? (
+                                <WelcomeCard key="welcome" onDismiss={handleDismissWelcome} />
+                            ) : (
+                                renderContent()
+                            )}
                         </AnimatePresence>
                     </div>
 
-                    {/* Disclaimer - Fixed */}
-                    <div className="text-center p-3 bg-black/30 backdrop-blur-md border border-white/10 rounded-xl flex-shrink-0">
-                        <p className="text-[10px] text-gray-300 leading-relaxed">
-                            {reading.disclaimer}
-                        </p>
-                    </div>
+
+
+                    {/* Disclaimer - Fixed (hidden when welcome card is shown) */}
+                    {!showWelcomeCard && (
+                        <div className="text-center p-3 bg-black/30 backdrop-blur-md border border-white/10 rounded-xl flex-shrink-0">
+                            <p className="text-[10px] text-gray-300 leading-relaxed">
+                                {reading.disclaimer}
+                            </p>
+                        </div>
+                    )}
+
                 </div>
             </main>
 
