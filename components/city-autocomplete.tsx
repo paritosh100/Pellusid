@@ -36,7 +36,7 @@ export const CityAutocomplete = ({
     const [selectedIndex, setSelectedIndex] = useState(-1);
     const inputRef = useRef<HTMLInputElement>(null);
     const dropdownRef = useRef<HTMLDivElement>(null);
-    const debounceTimer = useRef<NodeJS.Timeout>();
+    const debounceTimer = useRef<NodeJS.Timeout | undefined>(undefined);
 
     const hasValue = value && value.length > 0;
 
