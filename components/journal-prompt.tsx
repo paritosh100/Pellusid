@@ -18,6 +18,7 @@ interface JournalPromptProps {
     savedAnswer?: string | null;
     savedQuestion?: string | null;
     onAnswerGenerated?: (question: string, answer: string) => void;
+    onOpenFeedback?: () => void;
 }
 
 const CAREER_QUESTIONS = [
@@ -28,7 +29,7 @@ const CAREER_QUESTIONS = [
     "What kind of work feels closer to \"right,\" even if you can't explain why?",
 ];
 
-export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswer, savedQuestion, onAnswerGenerated }: JournalPromptProps) {
+export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswer, savedQuestion, onAnswerGenerated, onOpenFeedback }: JournalPromptProps) {
     const [showOptions, setShowOptions] = useState(!savedAnswer);
     const [selectedQuestion, setSelectedQuestion] = useState<string | null>(savedQuestion || null);
     const [customQuestion, setCustomQuestion] = useState("");
@@ -100,11 +101,8 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswe
     return (
         <Card className="mb-0 sm:mb-6 shadow-none sm:shadow-lg border-0 bg-transparent sm:bg-gradient-to-br from-[#50ffb1]/20 to-[#8ae1fc]/20 dark:from-[#3c896d]/40 dark:to-[#546d64]/40">
             <CardHeader className="pb-2">
-                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex items-center justify-between">
                     <CardTitle className="text-xl font-bold bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent">Career Reflection</CardTitle>
-                    <div className="self-end sm:self-auto">
-                        <SectionFeedback section="journalPrompt" readingId={readingId} />
-                    </div>
                 </div>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -212,6 +210,19 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswe
                                 Skip
                             </Button>
                         </div>
+
+                        {/* Feedback button */}
+                        <div className="mt-4 pt-4 border-t border-teal-500/30">
+                            <button
+                                onClick={onOpenFeedback}
+                                className="w-full px-6 py-3 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 hover:from-teal-500/30 hover:to-emerald-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] flex items-center justify-center gap-2"
+                            >
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                </svg>
+                                Share Your Feedback
+                            </button>
+                        </div>
                     </>
                 )}
 
@@ -237,14 +248,55 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswe
                                 </p>
                             </div>
                         </div>
+
+
+                        {/* Mobile feedback pills - 2x2 grid below content */}
+                        <div className="mt-4 pt-4 border-t border-teal-500/30">
+                            <SectionFeedback section="journalPrompt" readingId={readingId} />
+                        </div>
+
+                        {/* Feedback button */}
+                        <div className="mt-4 pt-4 border-t border-teal-500/30">
+                            <button
+                                onClick={onOpenFeedback}
+                                className="w-full px-6 py-3 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 hover:from-teal-500/30 hover:to-emerald-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] flex items-center justify-center gap-2"
+                            >
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                </svg>
+                                Share Your Feedback
+                            </button>
+                        </div>
                     </div>
                 )}
 
                 {/* Message when skipped */}
                 {!showOptions && !answer && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 text-center italic">
-                        You can always explore career questions later.
-                    </p>
+                    <div className="space-y-4">
+                        <p className="text-sm text-gray-400 text-center italic mb-4">
+                            You can always explore career questions later.
+                        </p>
+                        <div className="flex flex-col sm:flex-row gap-3">
+                            <a
+                                href="/"
+                                className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 hover:from-teal-500/30 hover:to-emerald-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] flex items-center justify-center gap-2 text-center"
+                            >
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                                </svg>
+                                Go Home
+                            </a>
+                            <button
+                                onClick={onOpenFeedback}
+                                className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 hover:from-teal-500/30 hover:to-emerald-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] flex items-center justify-center gap-2"
+                            >
+                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                                </svg>
+                                Share Your Feedback
+                            </button>
+                        </div>
+                    </div>
                 )}
             </CardContent>
         </Card>

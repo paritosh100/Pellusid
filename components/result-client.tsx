@@ -93,12 +93,18 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                     >
                         <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
                             <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Core Theme</h2>
-                            <SectionFeedback section="coreTheme" readingId={readingId} />
+                            <div className="hidden sm:block">
+                                <SectionFeedback section="coreTheme" readingId={readingId} />
+                            </div>
                         </div>
                         <div className="flex-1 overflow-y-auto pr-1 sm:pr-2">
                             <p className="text-lg sm:text-base leading-relaxed text-gray-100 whitespace-pre-line">
                                 {reading.coreTheme}
                             </p>
+                        </div>
+                        {/* Mobile feedback pills - 2x2 grid below content */}
+                        <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
+                            <SectionFeedback section="coreTheme" readingId={readingId} />
                         </div>
                     </motion.div>
                 );
@@ -113,9 +119,9 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         transition={{ duration: 0.3 }}
                         className="h-full overflow-hidden flex flex-col"
                     >
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-3 flex-shrink-0">
+                        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
                             <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">What's Working</h2>
-                            <div className="self-end sm:self-auto">
+                            <div className="hidden sm:block">
                                 <SectionFeedback section="strengths" readingId={readingId} />
                             </div>
                         </div>
@@ -135,6 +141,10 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 ))}
                             </ul>
                         </div>
+                        {/* Mobile feedback pills - 2x2 grid below content */}
+                        <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
+                            <SectionFeedback section="strengths" readingId={readingId} />
+                        </div>
                     </motion.div>
                 );
 
@@ -148,9 +158,9 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         transition={{ duration: 0.3 }}
                         className="h-full overflow-hidden flex flex-col"
                     >
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-3 flex-shrink-0">
+                        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
                             <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Energy Drains</h2>
-                            <div className="self-end sm:self-auto">
+                            <div className="hidden sm:block">
                                 <SectionFeedback section="frictions" readingId={readingId} />
                             </div>
                         </div>
@@ -170,6 +180,10 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 ))}
                             </ul>
                         </div>
+                        {/* Mobile feedback pills - 2x2 grid below content */}
+                        <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
+                            <SectionFeedback section="frictions" readingId={readingId} />
+                        </div>
                     </motion.div>
                 );
 
@@ -183,12 +197,12 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         transition={{ duration: 0.3 }}
                         className="h-full overflow-hidden flex flex-col"
                     >
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2 flex-shrink-0">
+                        <div className="flex items-center justify-between mb-2 flex-shrink-0">
                             <div>
                                 <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Next 7 Days</h2>
                                 <p className="text-gray-200 text-xs sm:text-xs mt-1">Focus areas to consider</p>
                             </div>
-                            <div className="self-end sm:self-auto">
+                            <div className="hidden sm:block">
                                 <SectionFeedback section="next7Days" readingId={readingId} />
                             </div>
                         </div>
@@ -210,6 +224,10 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 ))}
                             </ul>
                         </div>
+                        {/* Mobile feedback pills - 2x2 grid below content */}
+                        <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
+                            <SectionFeedback section="next7Days" readingId={readingId} />
+                        </div>
                     </motion.div>
                 );
 
@@ -230,6 +248,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                             savedAnswer={journalAnswer}
                             savedQuestion={journalQuestion}
                             onAnswerGenerated={handleAnswerGenerated}
+                            onOpenFeedback={() => setIsRightPanelOpen(true)}
                         />
                     </motion.div>
                 );
@@ -294,7 +313,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                             we need your feedback!
                         </button>
                     </div>
-                    <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
+                    <div className="hidden gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                         {sections.map((section) => (
                             <button
                                 key={section.id}
@@ -316,11 +335,11 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
 
             {/* Main Content Area - Fixed height, no scroll */}
             {/* Main Content Area - Fixed height, no scroll */}
-            <main className="flex-1 flex flex-col h-screen pt-24 lg:pt-0 pb-16 lg:pb-0 overflow-hidden relative">
+            <main className="flex-1 flex flex-col h-screen pt-16 lg:pt-0 pb-16 lg:pb-0 overflow-hidden relative">
 
                 <div className="flex-1 flex flex-col p-0 sm:p-4 lg:p-6 min-h-0">
                     {/* Header - Fixed */}
-                    <div className="mb-4 flex-shrink-0 px-4 sm:px-0 pt-4 sm:pt-0">
+                    <div className="mb-2 sm:mb-4 flex-shrink-0 px-4 sm:px-0 pt-2 sm:pt-0">
                         <h1 className="text-2xl lg:text-3xl font-black tracking-tighter text-white leading-tight">
                             {reading.headline}
                         </h1>
@@ -329,15 +348,11 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
 
                     {/* Dynamic Content - Flexible height with darker background */}
                     <div className={cn(
-                        "flex-1 sm:bg-[#0f2f2a]/40 sm:backdrop-blur-md sm:border sm:border-teal-500/20 sm:rounded-xl lg:p-6 min-h-0 mb-3",
-                        activeSection === 'journal' ? "p-0 sm:p-4" : "p-4"
+                        "flex-1 sm:bg-[#0f2f2a]/40 sm:backdrop-blur-md sm:border sm:border-teal-500/20 sm:rounded-xl lg:p-6 min-h-0 mb-1 sm:mb-3",
+                        activeSection === 'journal' ? "p-3 sm:p-4" : "p-3 sm:p-4"
                     )}>
                         <AnimatePresence mode="wait">
-                            {showWelcomeCard ? (
-                                <WelcomeCard key="welcome" onDismiss={handleDismissWelcome} />
-                            ) : (
-                                renderContent()
-                            )}
+                            {!showWelcomeCard && renderContent()}
                         </AnimatePresence>
                     </div>
 
@@ -345,7 +360,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
 
                     {/* Disclaimer - Fixed (hidden when welcome card is shown) */}
                     {!showWelcomeCard && (
-                        <div className="text-center p-3 bg-black/30 backdrop-blur-md border border-white/10 rounded-xl flex-shrink-0">
+                        <div className="text-center p-2 sm:p-3 bg-black/30 backdrop-blur-md border border-white/10 rounded-xl flex-shrink-0">
                             <p className="text-[10px] text-gray-300 leading-relaxed">
                                 {reading.disclaimer}
                             </p>
@@ -471,6 +486,27 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 <FeedbackWidget readingId={readingId} />
                             </div>
                         </motion.div>
+                    </>
+                )}
+            </AnimatePresence>
+
+            {/* Full-screen Welcome Card Overlay */}
+            <AnimatePresence>
+                {showWelcomeCard && (
+                    <>
+                        {/* Backdrop */}
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-gradient-to-br from-teal-900/30 via-purple-900/20 to-blue-900/30 backdrop-blur-3xl z-[60]"
+                        />
+                        {/* Welcome Card */}
+                        <div className="fixed inset-0 z-[61] flex items-center justify-center p-4">
+                            <div className="w-full h-full max-w-4xl max-h-[90vh] overflow-hidden">
+                                <WelcomeCard onDismiss={handleDismissWelcome} />
+                            </div>
+                        </div>
                     </>
                 )}
             </AnimatePresence>

@@ -75,14 +75,14 @@ export function SectionFeedback({ section, readingId }: SectionFeedbackProps) {
     };
 
     return (
-        <div className="flex items-center gap-1.5">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-1.5">
             {reactions.map(({ type, label, textColor, borderColor, selectedBg, hoverBg }) => (
                 <button
                     key={type}
                     onClick={() => handleReaction(type)}
                     disabled={isSubmitting}
                     className={`
-            h-6 px-2.5 sm:h-7 sm:px-3 rounded-full text-[10px] sm:text-xs font-medium transition-all border
+            h-8 px-3 sm:h-6 sm:px-2.5 md:h-7 md:px-3 rounded-full text-xs sm:text-[10px] md:text-xs font-medium transition-all border
             ${selectedReaction === type
                             ? selectedBg
                             : `bg-white dark:bg-gray-900 ${textColor} ${borderColor} ${hoverBg}`

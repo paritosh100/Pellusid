@@ -53,7 +53,7 @@ export function WelcomeCard({ onDismiss }: WelcomeCardProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative h-full flex flex-col bg-gradient-to-br from-[#0f2f2a]/60 to-[#1a1a2e]/60 backdrop-blur-xl border border-teal-500/30 rounded-2xl p-4 md:p-5 shadow-[0_20px_60px_-12px_rgba(13,148,136,0.3)]"
+            className="relative flex flex-col bg-gradient-to-br from-teal-500/10 via-purple-500/5 to-blue-500/10 backdrop-blur-2xl border border-teal-500/30 rounded-2xl p-4 md:p-5 md:p-6 lg:p-8 shadow-[0_20px_60px_-12px_rgba(13,148,136,0.3)]"
         >
             {/* Decorative corner accents */}
             <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-teal-400/40 rounded-tl-2xl pointer-events-none" />
@@ -78,12 +78,12 @@ export function WelcomeCard({ onDismiss }: WelcomeCardProps) {
                     <div className="p-1.5 bg-teal-500/20 rounded-lg border border-teal-500/30">
                         <Sparkles className="w-4 h-4 text-teal-400" />
                     </div>
-                    <h3 className="text-xl font-bold text-white tracking-tight">
+                    <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white tracking-tight">
                         Welcome to Your Insights
                     </h3>
                 </div>
-                <p className="text-gray-300 text-xs leading-relaxed ml-11">
-                    Your personalized reading is ready. Here's how to explore it:
+                <p className="text-gray-300 text-xs md:text-sm lg:text-base leading-relaxed ml-11">
+                    Your personalized reading is ready. Here's what you'll discover on your journey:
                 </p>
             </div>
 
@@ -102,10 +102,10 @@ export function WelcomeCard({ onDismiss }: WelcomeCardProps) {
                                 {section.icon}
                             </span>
                             <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-white text-xs mb-0.5 group-hover:text-teal-300 transition-colors">
+                                <h4 className="font-semibold text-white text-xs md:text-sm lg:text-base mb-0.5 group-hover:text-teal-300 transition-colors">
                                     {section.title}
                                 </h4>
-                                <p className="text-[10px] text-gray-400 leading-snug">
+                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 leading-snug">
                                     {section.description}
                                 </p>
                             </div>
@@ -116,36 +116,14 @@ export function WelcomeCard({ onDismiss }: WelcomeCardProps) {
                 ))}
             </div>
 
-            {/* Instructions */}
-            <div className="space-y-2 mb-3">
-                <div className="flex items-start gap-2 p-2 bg-teal-500/10 border border-teal-500/20 rounded-lg">
-                    <span className="text-teal-400 font-bold text-sm flex-shrink-0">1</span>
-                    <p className="text-xs text-gray-200 leading-snug">
-                        <span className="font-semibold text-white">Navigate sections</span> using the sidebar
-                        <span className="hidden lg:inline"> on the left</span>
-                        <span className="lg:hidden"> at the top</span>
-                    </p>
-                </div>
-                <div className="flex items-start gap-2 p-2 bg-purple-500/10 border border-purple-500/20 rounded-lg">
-                    <span className="text-purple-400 font-bold text-sm flex-shrink-0">2</span>
-                    <p className="text-xs text-gray-200 leading-snug">
-                        <span className="font-semibold text-white">Rate each section</span> with the feedback pills (Hit, Useful, Vague, Off)
-                    </p>
-                </div>
-                <div className="flex items-start gap-2 p-2 bg-pink-500/10 border border-pink-500/20 rounded-lg">
-                    <span className="text-pink-400 font-bold text-sm flex-shrink-0">3</span>
-                    <p className="text-xs text-gray-200 leading-snug">
-                        <span className="font-semibold text-white">Share your thoughts</span> using the feedback panel to help us improve
-                    </p>
-                </div>
-            </div>
+
 
             {/* CTA Button */}
             <motion.button
                 onClick={onDismiss}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-6 py-3 bg-gradient-to-r from-teal-500/20 to-purple-500/20 hover:from-teal-500/30 hover:to-purple-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm tracking-wide uppercase transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] group"
+                className="w-full px-6 py-3 bg-gradient-to-r from-teal-500/20 to-purple-500/20 hover:from-teal-500/30 hover:to-purple-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm md:text-base lg:text-lg tracking-wide uppercase transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] group"
             >
                 <span className="flex items-center justify-center gap-2">
                     Start Exploring
