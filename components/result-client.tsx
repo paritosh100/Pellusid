@@ -15,7 +15,7 @@ import { AppNameFeedback } from "@/components/app-name-feedback";
 import { WelcomeCard } from "@/components/welcome-card";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { MessageSquare, X } from "lucide-react";
+import { MessageSquare, X, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ResultClientProps {
     reading: any;
@@ -61,6 +61,23 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
         { id: 'next7Days' as Section, label: 'Next 7 Days', icon: '→' },
         { id: 'journal' as Section, label: 'Journal Prompt', icon: '✎' },
     ];
+
+    // Navigation helpers
+    const currentSectionIndex = sections.findIndex(s => s.id === activeSection);
+    const isFirstSection = currentSectionIndex === 0;
+    const isLastSection = currentSectionIndex === sections.length - 1;
+
+    const goToPreviousSection = () => {
+        if (!isFirstSection) {
+            setActiveSection(sections[currentSectionIndex - 1].id);
+        }
+    };
+
+    const goToNextSection = () => {
+        if (!isLastSection) {
+            setActiveSection(sections[currentSectionIndex + 1].id);
+        }
+    };
 
     const renderContent = () => {
         switch (activeSection) {
@@ -299,7 +316,8 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
 
             {/* Main Content Area - Fixed height, no scroll */}
             {/* Main Content Area - Fixed height, no scroll */}
-            <main className="flex-1 flex flex-col h-screen pt-24 lg:pt-0 overflow-hidden">
+            <main className="flex-1 flex flex-col h-screen pt-24 lg:pt-0 pb-16 lg:pb-0 overflow-hidden relative">
+
                 <div className="flex-1 flex flex-col p-0 sm:p-4 lg:p-6 min-h-0">
                     {/* Header - Fixed */}
                     <div className="mb-4 flex-shrink-0 px-4 sm:px-0 pt-4 sm:pt-0">
@@ -336,6 +354,68 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
 
                 </div>
             </main>
+
+            {/* Mobile Navigation Bar - Fixed at bottom */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-xl border-t border-white/10 flex items-center justify-between px-6 z-40">
+                {/* Left Arrow */}
+                <motion.button
+                    onClick={goToPreviousSection}
+                    disabled={isFirstSection}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: isFirstSection ? 0.3 : 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className={cn(
+                        "w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300",
+                        "bg-white/5 border border-white/20",
+                        !isFirstSection && "hover:bg-teal-500/20 hover:border-teal-500/40 hover:shadow-[0_0_20px_-5px_rgba(13,148,136,0.4)]",
+                        "active:scale-95",
+                        isFirstSection && "cursor-not-allowed"
+                    )}
+                    aria-label="Previous section"
+                >
+                    <ChevronLeft className={cn(
+                        "w-6 h-6 transition-colors",
+                        isFirstSection ? "text-gray-600" : "text-teal-300"
+                    )} />
+                </motion.button>
+
+                {/* Section Indicator */}
+                <div className="flex items-center gap-1.5">
+                    {sections.map((section, index) => (
+                        <div
+                            key={section.id}
+                            className={cn(
+                                "h-1.5 rounded-full transition-all duration-300",
+                                activeSection === section.id
+                                    ? "w-8 bg-teal-400"
+                                    : "w-1.5 bg-white/20"
+                            )}
+                        />
+                    ))}
+                </div>
+
+                {/* Right Arrow */}
+                <motion.button
+                    onClick={goToNextSection}
+                    disabled={isLastSection}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: isLastSection ? 0.3 : 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                    className={cn(
+                        "w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300",
+                        "bg-white/5 border border-white/20",
+                        !isLastSection && "hover:bg-teal-500/20 hover:border-teal-500/40 hover:shadow-[0_0_20px_-5px_rgba(13,148,136,0.4)]",
+                        "active:scale-95",
+                        isLastSection && "cursor-not-allowed"
+                    )}
+                    aria-label="Next section"
+                >
+                    <ChevronRight className={cn(
+                        "w-6 h-6 transition-colors",
+                        isLastSection ? "text-gray-600" : "text-teal-300"
+                    )} />
+                </motion.button>
+            </div>
 
             {/* Right Sidebar - Compact, no scroll */}
             <aside className="hidden xl:flex xl:flex-col w-72 bg-black/70 backdrop-blur-2xl border-l border-white/10 flex-shrink-0 h-screen">
