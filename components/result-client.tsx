@@ -91,12 +91,12 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         transition={{ duration: 0.3 }}
                         className="h-full overflow-hidden flex flex-col"
                     >
-                        <div className="flex items-center justify-between mb-3 flex-shrink-0">
-                            <h2 className="text-2xl font-bold text-teal-300 tracking-wide">Core Theme</h2>
+                        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
+                            <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Core Theme</h2>
                             <SectionFeedback section="coreTheme" readingId={readingId} />
                         </div>
-                        <div className="flex-1 overflow-y-auto pr-2">
-                            <p className="text-base leading-relaxed text-gray-100 whitespace-pre-line">
+                        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2">
+                            <p className="text-lg sm:text-base leading-relaxed text-gray-100 whitespace-pre-line">
                                 {reading.coreTheme}
                             </p>
                         </div>
@@ -113,24 +113,24 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         transition={{ duration: 0.3 }}
                         className="h-full overflow-hidden flex flex-col"
                     >
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3 flex-shrink-0">
-                            <h2 className="text-2xl font-bold text-teal-300 tracking-wide">What's Working</h2>
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-3 flex-shrink-0">
+                            <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">What's Working</h2>
                             <div className="self-end sm:self-auto">
                                 <SectionFeedback section="strengths" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto pr-2">
-                            <ul className="space-y-2">
+                        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2">
+                            <ul className="space-y-3 sm:space-y-2">
                                 {reading.strengths.map((strength: string, index: number) => (
                                     <motion.li
                                         key={index}
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
-                                        className="flex items-start gap-3"
+                                        className="flex items-start gap-2 sm:gap-3"
                                     >
-                                        <span className="text-green-400 mt-0 text-lg flex-shrink-0 leading-none">✓</span>
-                                        <span className="text-gray-100 text-base leading-relaxed">{strength}</span>
+                                        <span className="text-green-400 mt-0.5 text-xl sm:text-lg flex-shrink-0 leading-none">✓</span>
+                                        <span className="text-gray-100 text-lg sm:text-base leading-relaxed">{strength}</span>
                                     </motion.li>
                                 ))}
                             </ul>
@@ -148,24 +148,24 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         transition={{ duration: 0.3 }}
                         className="h-full overflow-hidden flex flex-col"
                     >
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-3 flex-shrink-0">
-                            <h2 className="text-2xl font-bold text-teal-300 tracking-wide">Energy Drains</h2>
+                        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2 sm:mb-3 flex-shrink-0">
+                            <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Energy Drains</h2>
                             <div className="self-end sm:self-auto">
                                 <SectionFeedback section="frictions" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto pr-2">
-                            <ul className="space-y-2">
+                        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2">
+                            <ul className="space-y-3 sm:space-y-2">
                                 {reading.frictions.map((friction: string, index: number) => (
                                     <motion.li
                                         key={index}
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
-                                        className="flex items-start gap-3"
+                                        className="flex items-start gap-2 sm:gap-3"
                                     >
-                                        <span className="text-amber-400 mt-0 text-lg flex-shrink-0 leading-none">⚠</span>
-                                        <span className="text-gray-100 text-base leading-relaxed">{friction}</span>
+                                        <span className="text-amber-400 mt-0.5 text-xl sm:text-lg flex-shrink-0 leading-none">⚠</span>
+                                        <span className="text-gray-100 text-lg sm:text-base leading-relaxed">{friction}</span>
                                     </motion.li>
                                 ))}
                             </ul>
@@ -185,27 +185,27 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                     >
                         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between mb-2 flex-shrink-0">
                             <div>
-                                <h2 className="text-2xl font-bold text-teal-300 tracking-wide">Next 7 Days</h2>
-                                <p className="text-gray-200 text-xs mt-1">Focus areas to consider</p>
+                                <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Next 7 Days</h2>
+                                <p className="text-gray-200 text-xs sm:text-xs mt-1">Focus areas to consider</p>
                             </div>
                             <div className="self-end sm:self-auto">
                                 <SectionFeedback section="next7Days" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto pr-2 mt-2">
-                            <ul className="space-y-2">
+                        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 mt-2">
+                            <ul className="space-y-3 sm:space-y-2">
                                 {reading.next7Days.map((focus: string, index: number) => (
                                     <motion.li
                                         key={index}
                                         initial={{ opacity: 0, x: -20 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
-                                        className="flex items-start gap-3"
+                                        className="flex items-start gap-2 sm:gap-3"
                                     >
-                                        <span className="text-teal-300 mt-0 font-bold text-base flex-shrink-0 leading-none">
+                                        <span className="text-teal-300 mt-0.5 font-bold text-lg sm:text-base flex-shrink-0 leading-none">
                                             {index + 1}.
                                         </span>
-                                        <span className="text-gray-100 text-base leading-relaxed">{focus}</span>
+                                        <span className="text-gray-100 text-lg sm:text-base leading-relaxed">{focus}</span>
                                     </motion.li>
                                 ))}
                             </ul>
