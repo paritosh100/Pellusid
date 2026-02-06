@@ -300,13 +300,13 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 key={section.id}
                                 onClick={() => setActiveSection(section.id)}
                                 className={cn(
-                                    "px-3 py-1.5 rounded-lg whitespace-nowrap text-xs transition-all duration-300 flex items-center gap-1.5 border",
+                                    "px-3 py-2 rounded-lg whitespace-nowrap text-sm transition-all duration-300 flex items-center gap-1.5 border",
                                     activeSection === section.id
                                         ? "bg-teal-500/30 border-teal-400/50 text-teal-100"
                                         : "text-gray-200 bg-white/5 border-transparent"
                                 )}
                             >
-                                <span className="text-sm">{section.icon}</span>
+                                <span className="text-base">{section.icon}</span>
                                 <span>{section.label}</span>
                             </button>
                         ))}
