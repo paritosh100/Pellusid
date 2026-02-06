@@ -89,7 +89,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.3 }}
-                        className="h-full overflow-hidden flex flex-col"
+                        className="flex flex-col"
                     >
                         <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
                             <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Core Theme</h2>
@@ -97,13 +97,14 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 <SectionFeedback section="coreTheme" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-shrink-0 pr-1 sm:pr-2">
+                        <div className="pr-1 sm:pr-2">
                             <p className="text-lg sm:text-base leading-relaxed text-gray-100 whitespace-pre-line">
                                 {reading.coreTheme}
                             </p>
                         </div>
                         {/* Mobile feedback pills - 2x2 grid below content */}
                         <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
+                            <p className="text-sm text-gray-300 mb-2">What was your reaction to the Core Theme?</p>
                             <SectionFeedback section="coreTheme" readingId={readingId} />
                         </div>
                     </motion.div>
@@ -117,7 +118,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.3 }}
-                        className="h-full overflow-hidden flex flex-col"
+                        className="flex flex-col"
                     >
                         <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
                             <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">What's Working</h2>
@@ -125,7 +126,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 <SectionFeedback section="strengths" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-shrink-0 pr-1 sm:pr-2">
+                        <div className="pr-1 sm:pr-2">
                             <ul className="space-y-3 sm:space-y-2">
                                 {reading.strengths.map((strength: string, index: number) => (
                                     <motion.li
@@ -143,6 +144,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         </div>
                         {/* Mobile feedback pills - 2x2 grid below content */}
                         <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
+                            <p className="text-sm text-gray-300 mb-2">What was your reaction to What's Working?</p>
                             <SectionFeedback section="strengths" readingId={readingId} />
                         </div>
                     </motion.div>
@@ -156,7 +158,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.3 }}
-                        className="h-full overflow-hidden flex flex-col"
+                        className="flex flex-col"
                     >
                         <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
                             <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Energy Drains</h2>
@@ -164,7 +166,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 <SectionFeedback section="frictions" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-shrink-0 pr-1 sm:pr-2">
+                        <div className="pr-1 sm:pr-2">
                             <ul className="space-y-3 sm:space-y-2">
                                 {reading.frictions.map((friction: string, index: number) => (
                                     <motion.li
@@ -182,6 +184,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         </div>
                         {/* Mobile feedback pills - 2x2 grid below content */}
                         <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
+                            <p className="text-sm text-gray-300 mb-2">What was your reaction to the Energy Drains?</p>
                             <SectionFeedback section="frictions" readingId={readingId} />
                         </div>
                     </motion.div>
@@ -195,7 +198,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.3 }}
-                        className="h-full overflow-hidden flex flex-col"
+                        className="flex flex-col"
                     >
                         <div className="flex items-center justify-between mb-2 flex-shrink-0">
                             <div>
@@ -206,7 +209,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 <SectionFeedback section="next7Days" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-shrink-0 pr-1 sm:pr-2 mt-2">
+                        <div className="pr-1 sm:pr-2 mt-2">
                             <ul className="space-y-3 sm:space-y-2">
                                 {reading.next7Days.map((focus: string, index: number) => (
                                     <motion.li
@@ -226,6 +229,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         </div>
                         {/* Mobile feedback pills - 2x2 grid below content */}
                         <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
+                            <p className="text-sm text-gray-300 mb-2">What was your reaction to the Next 7 Days?</p>
                             <SectionFeedback section="next7Days" readingId={readingId} />
                         </div>
                     </motion.div>
@@ -239,7 +243,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.3 }}
-                        className="h-full overflow-y-auto pr-2"
+                        className="pr-2"
                     >
                         <JournalPrompt
                             journalPrompt={reading.journalPrompt}
@@ -334,10 +338,10 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
             </div>
 
             {/* Main Content Area - Fixed height, no scroll */}
-            {/* Main Content Area - Fixed height, no scroll */}
-            <main className="flex-1 flex flex-col h-screen pt-16 lg:pt-0 pb-16 lg:pb-0 overflow-hidden relative">
+            {/* Main Content Area - Scrollable */}
+            <main className="flex-1 flex flex-col pt-16 lg:pt-0 pb-16 lg:pb-0 overflow-y-auto relative">
 
-                <div className="flex-1 flex flex-col p-0 sm:p-4 lg:p-6 min-h-0">
+                <div className="flex flex-col p-0 sm:p-4 lg:p-6">
                     {/* Header - Fixed */}
                     <div className="mb-2 sm:mb-4 flex-shrink-0 px-4 sm:px-0 pt-2 sm:pt-0">
                         <h1 className="text-2xl lg:text-3xl font-black tracking-tighter text-white leading-tight">
@@ -348,7 +352,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
 
                     {/* Dynamic Content - Flexible height with darker background */}
                     <div className={cn(
-                        "flex-1 sm:bg-[#0f2f2a]/40 sm:backdrop-blur-md sm:border sm:border-teal-500/20 sm:rounded-xl lg:p-6 min-h-0 mb-1 sm:mb-3",
+                        "sm:bg-[#0f2f2a]/40 sm:backdrop-blur-md sm:border sm:border-teal-500/20 sm:rounded-xl lg:p-6 mb-1 sm:mb-3",
                         activeSection === 'journal' ? "p-3 sm:p-4" : "p-3 sm:p-4"
                     )}>
                         <AnimatePresence mode="wait">
