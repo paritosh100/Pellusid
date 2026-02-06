@@ -97,7 +97,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 <SectionFeedback section="coreTheme" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2">
+                        <div className="flex-shrink-0 pr-1 sm:pr-2">
                             <p className="text-lg sm:text-base leading-relaxed text-gray-100 whitespace-pre-line">
                                 {reading.coreTheme}
                             </p>
@@ -125,7 +125,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 <SectionFeedback section="strengths" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2">
+                        <div className="flex-shrink-0 pr-1 sm:pr-2">
                             <ul className="space-y-3 sm:space-y-2">
                                 {reading.strengths.map((strength: string, index: number) => (
                                     <motion.li
@@ -164,7 +164,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 <SectionFeedback section="frictions" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2">
+                        <div className="flex-shrink-0 pr-1 sm:pr-2">
                             <ul className="space-y-3 sm:space-y-2">
                                 {reading.frictions.map((friction: string, index: number) => (
                                     <motion.li
@@ -206,7 +206,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 <SectionFeedback section="next7Days" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="flex-1 overflow-y-auto pr-1 sm:pr-2 mt-2">
+                        <div className="flex-shrink-0 pr-1 sm:pr-2 mt-2">
                             <ul className="space-y-3 sm:space-y-2">
                                 {reading.next7Days.map((focus: string, index: number) => (
                                     <motion.li
