@@ -434,7 +434,7 @@ export default function HomePage() {
                 </div>
 
                 {/* Mode Toggle */}
-                <div className="flex items-center justify-center gap-3">
+                {/* <div className="flex items-center justify-center gap-3">
                   <button
                     type="button"
                     onClick={() => setMode('normal')}
@@ -459,7 +459,7 @@ export default function HomePage() {
                   >
                     Deep Dive
                   </button>
-                </div>
+                </div> */}
 
                 {/* Error Message */}
                 <AnimatePresence>

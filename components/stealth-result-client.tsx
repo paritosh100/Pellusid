@@ -8,6 +8,7 @@
 
 import { useState } from "react";
 import { ShareButton } from "@/components/share-button";
+import { JournalPrompt } from "@/components/journal-prompt";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -19,16 +20,24 @@ interface StealthResultClientProps {
     readingId: string;
 }
 
-type StealthSection = 'whereYouveBeen' | 'whereYouAre' | 'direction' | 'summary';
+type StealthSection = 'whereYouveBeen' | 'whereYouAre' | 'direction' | 'summary' | 'deepQuestion';
 
 export function StealthResultClient({ reading, inputs, readingId }: StealthResultClientProps) {
     const [activeSection, setActiveSection] = useState<StealthSection>('whereYouveBeen');
+    const [journalAnswer, setJournalAnswer] = useState<string | null>(null);
+    const [journalQuestion, setJournalQuestion] = useState<string | null>(null);
+
+    const handleAnswerGenerated = (question: string, answer: string) => {
+        setJournalQuestion(question);
+        setJournalAnswer(answer);
+    };
 
     const sections = [
         { id: 'whereYouveBeen' as StealthSection, label: 'Past Patterns', icon: '↺' },
         { id: 'whereYouAre' as StealthSection, label: 'Current Phase', icon: '◉' },
         { id: 'direction' as StealthSection, label: 'Growth Direction', icon: '↗' },
         { id: 'summary' as StealthSection, label: 'Your Report', icon: '◈' },
+        { id: 'deepQuestion' as StealthSection, label: 'Ask a Question', icon: '✏' },
     ];
 
     const currentSectionIndex = sections.findIndex(s => s.id === activeSection);
@@ -154,6 +163,29 @@ export function StealthResultClient({ reading, inputs, readingId }: StealthResul
                                 {reading.summary.decisionAlignment}
                             </p>
                         </div>
+                    </motion.div>
+                );
+
+            case 'deepQuestion':
+                return (
+                    <motion.div
+                        key="deepQuestion"
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.3 }}
+                        className="pr-2"
+                    >
+                        <JournalPrompt
+                            journalPrompt={reading.closingNudge}
+                            userInputs={inputs}
+                            readingId={readingId}
+                            savedAnswer={journalAnswer}
+                            savedQuestion={journalQuestion}
+                            onAnswerGenerated={handleAnswerGenerated}
+                            onOpenFeedback={() => { }}
+                            mode="stealth"
+                        />
                     </motion.div>
                 );
         }

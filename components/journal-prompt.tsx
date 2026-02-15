@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SectionFeedback } from "@/components/section-feedback";
-import type { UserInput } from "@/lib/types";
+import type { UserInput, ReadingMode } from "@/lib/types";
 
 interface JournalPromptProps {
     journalPrompt: string;
@@ -19,6 +19,7 @@ interface JournalPromptProps {
     savedQuestion?: string | null;
     onAnswerGenerated?: (question: string, answer: string) => void;
     onOpenFeedback?: () => void;
+    mode?: ReadingMode;
 }
 
 const CAREER_QUESTIONS = [
@@ -29,7 +30,7 @@ const CAREER_QUESTIONS = [
     "What kind of work feels closer to \"right,\" even if you can't explain why?",
 ];
 
-export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswer, savedQuestion, onAnswerGenerated, onOpenFeedback }: JournalPromptProps) {
+export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswer, savedQuestion, onAnswerGenerated, onOpenFeedback, mode }: JournalPromptProps) {
     const [showOptions, setShowOptions] = useState(!savedAnswer);
     const [selectedQuestion, setSelectedQuestion] = useState<string | null>(savedQuestion || null);
     const [customQuestion, setCustomQuestion] = useState("");
@@ -70,6 +71,7 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswe
                     isCustom: showCustomInput,
                     userInputs,
                     readingId,
+                    mode: mode || 'normal',
                 }),
             });
 
