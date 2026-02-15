@@ -205,7 +205,9 @@ export default function HomePage() {
       if (data && !error) {
         setName(data.name || "");
         setBirthDate(data.birth_date || "");
-        setBirthTime(data.birth_time || "");
+        // Normalize birth_time from DB (HH:mm:ss) to HH:mm for form/validation
+        const rawTime = data.birth_time || "";
+        setBirthTime(rawTime.length > 5 ? rawTime.slice(0, 5) : rawTime);
         setBirthCity(data.birth_city || "");
       }
     }
