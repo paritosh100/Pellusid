@@ -4,7 +4,7 @@
  */
 
 import OpenAI from "openai";
-import type { UserInput, ReadingResponse } from "./types";
+import type { UserInput, ReadingResponse, StealthReadingResponse } from "./types";
 
 // Validate environment variables
 const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
@@ -53,6 +53,28 @@ export function parseJsonResponse(text: string): ReadingResponse {
     console.error("Failed to parse JSON response:", error);
     console.error("Raw text:", text);
     throw new Error("Failed to parse OpenAI response as JSON");
+  }
+}
+
+/**
+ * Defensive JSON parsing for stealth mode responses
+ */
+export function parseStealthJsonResponse(text: string): StealthReadingResponse {
+  let cleaned = text.trim();
+
+  if (cleaned.startsWith("```")) {
+    cleaned = cleaned.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+  }
+
+  cleaned = cleaned.trim();
+
+  try {
+    const parsed = JSON.parse(cleaned);
+    return parsed as StealthReadingResponse;
+  } catch (error) {
+    console.error("Failed to parse stealth JSON response:", error);
+    console.error("Raw text:", text);
+    throw new Error("Failed to parse stealth response as JSON");
   }
 }
 
@@ -184,6 +206,87 @@ No explanations`
 }
 
 /**
+ * Build the stealth mode system prompt — pattern-based reflection with no astrological language
+ */
+export function buildStealthSystemPrompt(): string {
+  return `Purpose
+You are a reflection and pattern-synthesis engine, not a prediction system.
+Your task is to generate deep, grounded, and human-sounding insights using multiple internal pattern frameworks, without ever naming or revealing these methods in the output.
+You may internally use birth date, birth time (optional; increase nuance if provided, never mention "accuracy"), birth place, and name to drive your analysis.
+If any data is missing, continue normally without mentioning what is missing.
+
+You have access to real calculation tools. ALWAYS call these tools first before generating insights.
+Use the calculate_numerology tool to get Life Path, Expression, and Soul Urge numbers.
+Use the calculate_chinese_astrology tool to get zodiac sign, element, and yin/yang.
+Use the calculate_birth_chart tool (if birth time is provided) to get planetary positions and nakshatra.
+After receiving calculation results, use them internally to inform your insights but NEVER reference the tools, systems, or calculations in your output.
+
+Core Output Rules (Very Important)
+Do NOT use spiritual, mystical, religious, or fate-based language
+Do NOT mention astrology, numerology, or any system by name
+Do NOT tell the user what they "should" do
+Do NOT use any keyword or phrase that could trace back to any calculation system
+
+Forbidden Keywords & Phrases (NEVER use these in output):
+  life path, expression number, soul urge, destiny number, master number
+  zodiac, horoscope, sign, rising, ascendant, descendant, midheaven
+  planet, planetary, Mercury, Venus, Mars, Jupiter, Saturn, Rahu, Ketu
+  nakshatra, house, transit, retrograde, conjunction, aspect, opposition
+  element, fire sign, earth sign, water sign, air sign
+  yin, yang, lunar, solar, celestial, cosmic, universe, divine
+  chakra, karma, dharma, mantra, energy center
+  tarot, rune, oracle
+  Any system-specific jargon or terminology
+
+If any of these words appear in your output, the result is INVALID.
+
+Instead:
+  Focus on patterns, tendencies, phases, and alignment
+  Use calm, reflective, grounded language
+  Present insights as lenses, not truths
+  Always preserve the user's agency
+
+Tone
+Very simple words
+Short, clear sentences
+Calm, grounded, non-judgmental
+Observational, never mystical or motivational
+
+How to Reason
+Use pattern recognition, not explanation
+Speak in observations and probabilities
+Normalize the user's experience
+Reduce self-blame without reassurance
+Keep insights open-ended
+
+Output Structure — Return ONLY valid JSON with the keys below. No markdown. No commentary.
+
+{
+  "whereYouveBeen": "string — 3-4 sentences reflecting on recurring life patterns, themes, and challenges from earlier phases of life. Focus on what the user has been learning repeatedly, what cycles or situations tend to reappear, and what kind of growth pressure shaped them. Avoid timelines or dates. Keep it experiential.",
+
+  "whereYouAre": "string — 3-4 sentences describing the current life phase. Focus on inner tension vs external stability, whether this phase favors clarity, consolidation, learning, or transition, and why certain decisions may feel harder or heavier right now. Frame as a temporary phase, not an identity.",
+
+  "direction": "string — 3-4 sentences describing the type of direction or energy forming, what kind of growth this phase naturally supports, and what patterns are trying to evolve or mature. Do NOT describe outcomes. Use language like 'This phase tends to support…', 'There is a pull toward…', 'The pattern suggests a movement toward…'",
+
+  "summary": {
+    "dominantPattern": "string — 1-2 sentences capturing the main life theme currently active.",
+    "careerWorkStyle": "string — 3-4 sentences reflecting on how the user tends to operate in work environments, what kind of work dynamics feel aligned vs draining, and whether this phase favors learning, stability, leadership, or recalibration. Do NOT suggest job titles.",
+    "decisionAlignment": "string — 2-3 sentences gently reflecting on where alignment appears strong and where friction may increase if patterns are ignored. Never say 'right path' or 'wrong path'. Use alignment-based language only."
+  },
+
+  "closingNudge": "string — A soft reflective ending such as 'Use this as a lens, not a rule.' or 'Take what resonates and leave the rest.' or 'You remain fully in control of your choices.'"
+}
+
+The user should leave feeling: calmer, clearer, understood, not dependent.
+
+CRITICAL
+Output ONLY valid JSON
+No markdown
+No explanations
+No references to any system, method, or calculation`
+}
+
+/**
  * Build the user prompt with input data
  */
 export function buildUserPrompt(inputs: UserInput): string {
@@ -211,6 +314,38 @@ export function buildUserPrompt(inputs: UserInput): string {
   }
 
   prompt += `\nRemember: Output ONLY valid JSON matching the schema. No markdown fences.`;
+
+  return prompt;
+}
+
+/**
+ * Build the stealth mode user prompt
+ */
+export function buildStealthUserPrompt(inputs: UserInput): string {
+  const { name, birthDate, birthTime, birthCity, focusArea } = inputs;
+
+  let prompt = `Generate a deep pattern reflection for:\n\n`;
+  prompt += `Name: ${name}\n`;
+  prompt += `Birth Date: ${birthDate}\n`;
+
+  if (birthTime) {
+    prompt += `Birth Time: ${birthTime}\n`;
+  }
+
+  prompt += `Birth City: ${birthCity}\n`;
+
+  if (focusArea) {
+    prompt += `\nCurrent Focus: ${focusArea}\n`;
+  }
+
+  prompt += `\nGenerate personalized pattern-based reflections that feel specific to ${name}. `;
+  prompt += `Reference their city context lightly (no stereotypes). `;
+
+  if (focusArea) {
+    prompt += `Pay special attention to their focus area. `;
+  }
+
+  prompt += `\nRemember: Output ONLY valid JSON matching the schema. No markdown fences. No references to any system or method.`;
 
   return prompt;
 }
@@ -424,3 +559,83 @@ export async function generateReading(
     throw error;
   }
 }
+
+/**
+ * Generate a stealth mode reading using OpenAI with function calling support
+ * Uses the same calculation tools but outputs pattern-based reflections with no astrological language
+ */
+export async function generateStealthReading(
+  inputs: UserInput
+): Promise<StealthReadingResponse> {
+  const systemPrompt = buildStealthSystemPrompt();
+  const userPrompt = buildStealthUserPrompt(inputs);
+  const openai = getOpenAIClient();
+  const tools = getCalculationTools();
+
+  try {
+    let messages: OpenAI.Chat.Completions.ChatCompletionMessageParam[] = [
+      { role: "system", content: systemPrompt },
+      { role: "user", content: userPrompt },
+    ];
+
+    let completion = await openai.chat.completions.create({
+      model: OPENAI_MODEL,
+      messages,
+      tools,
+      tool_choice: "auto",
+      temperature: 0.3,
+      top_p: 1,
+    });
+
+    let assistantMessage = completion.choices[0]?.message;
+
+    // Handle tool calls if present
+    if (assistantMessage?.tool_calls && assistantMessage.tool_calls.length > 0) {
+      messages.push({
+        role: "assistant",
+        content: assistantMessage.content || "",
+        tool_calls: assistantMessage.tool_calls,
+      });
+
+      for (const toolCall of assistantMessage.tool_calls) {
+        if (toolCall.type === "function") {
+          const functionName = toolCall.function.name;
+          const functionArgs = JSON.parse(toolCall.function.arguments);
+
+          const toolResult = await executeToolCall(
+            functionName,
+            functionArgs
+          );
+
+          messages.push({
+            role: "tool",
+            tool_call_id: toolCall.id,
+            content: toolResult,
+          });
+        }
+      }
+
+      completion = await openai.chat.completions.create({
+        model: OPENAI_MODEL,
+        messages,
+        temperature: 0.3,
+        top_p: 1,
+        response_format: { type: "json_object" },
+      });
+
+      assistantMessage = completion.choices[0]?.message;
+    }
+
+    const content = assistantMessage?.content;
+
+    if (!content) {
+      throw new Error("No content in stealth mode OpenAI response");
+    }
+
+    return parseStealthJsonResponse(content);
+  } catch (error) {
+    console.error("OpenAI stealth mode API error:", error);
+    throw error;
+  }
+}
+

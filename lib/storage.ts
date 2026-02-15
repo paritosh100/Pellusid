@@ -4,7 +4,7 @@
  */
 
 import { v4 as uuidv4 } from "uuid";
-import type { StoredReading, UserInput, ReadingResponse } from "./types";
+import type { StoredReading, StealthStoredReading, UserInput, ReadingResponse, StealthReadingResponse } from "./types";
 import { createClient } from "./supabase/server";
 import { trackAnalyticsEvent } from "./supabase/analytics";
 
@@ -256,4 +256,131 @@ export async function getAllReadings(): Promise<StoredReading[]> {
         },
         timestamp: new Date(record.created_at).getTime(),
     }));
+}
+
+// ============================================================
+// Stealth Mode Storage Functions
+// ============================================================
+
+/**
+ * Save a stealth reading to the stealth_readings table
+ */
+export async function saveStealthReading(
+    inputs: UserInput,
+    reading: StealthReadingResponse,
+    userId?: string | null
+): Promise<string> {
+    const readingId = uuidv4();
+    const supabase = await createClient();
+
+    const { data, error } = await supabase.from("stealth_readings").insert({
+        reading_id: readingId,
+        user_id: userId || null,
+        name: inputs.name,
+        birth_date: inputs.birthDate,
+        birth_time: inputs.birthTime || null,
+        birth_city: inputs.birthCity,
+        focus_area: inputs.focusArea || null,
+        where_youve_been: reading.whereYouveBeen,
+        where_you_are: reading.whereYouAre,
+        direction: reading.direction,
+        summary: reading.summary,
+        closing_nudge: reading.closingNudge,
+    }).select('id').single();
+
+    if (error) {
+        console.error("[Storage] Failed to save stealth reading:", error);
+        throw new Error("Failed to save stealth reading to database");
+    }
+
+    console.log(`[Storage] Saved stealth reading with ID: ${readingId}`);
+
+    if (data?.id) {
+        await trackAnalyticsEvent({
+            eventType: "stealth_reading_generated",
+            readingId: data.id,
+            userId: userId || undefined,
+            metadata: {
+                hasFocusArea: !!inputs.focusArea,
+                hasBirthTime: !!inputs.birthTime,
+                mode: "stealth",
+            },
+        });
+    }
+
+    return readingId;
+}
+
+/**
+ * Retrieve a stealth reading from the stealth_readings table
+ */
+export async function getStealthReading(
+    readingId: string
+): Promise<StealthStoredReading | null> {
+    console.log(`[Storage] Attempting to retrieve stealth reading: ${readingId}`);
+    const supabase = await createClient();
+
+    const { data, error } = await supabase
+        .from("stealth_readings")
+        .select("*")
+        .eq("reading_id", readingId)
+        .single();
+
+    if (error || !data) {
+        console.log(`[Storage] Stealth reading not found: ${readingId}`);
+        return null;
+    }
+
+    const storedReading: StealthStoredReading = {
+        readingId: data.reading_id,
+        inputs: {
+            name: data.name,
+            birthDate: data.birth_date,
+            birthTime: data.birth_time || undefined,
+            birthCity: data.birth_city,
+            focusArea: data.focus_area || undefined,
+            mode: 'stealth',
+        },
+        reading: {
+            whereYouveBeen: data.where_youve_been,
+            whereYouAre: data.where_you_are,
+            direction: data.direction,
+            summary: data.summary,
+            closingNudge: data.closing_nudge,
+        },
+        timestamp: new Date(data.created_at).getTime(),
+        mode: 'stealth',
+    };
+
+    console.log(`[Storage] Stealth reading found: ${readingId}`);
+
+    await trackAnalyticsEvent({
+        eventType: "stealth_reading_viewed",
+        readingId: data.id,
+        userId: data.user_id || undefined,
+    });
+
+    return storedReading;
+}
+
+/**
+ * Get any reading by ID — tries normal readings first, then stealth
+ * Returns a discriminated union so the result page can render accordingly
+ */
+export async function getAnyReading(
+    readingId: string
+): Promise<(StoredReading & { mode: 'normal' }) | StealthStoredReading | null> {
+    // Try normal reading first
+    const normalReading = await getReading(readingId);
+    if (normalReading) {
+        return { ...normalReading, mode: 'normal' };
+    }
+
+    // Try stealth reading
+    const stealthReading = await getStealthReading(readingId);
+    if (stealthReading) {
+        return stealthReading;
+    }
+
+    return null;
 }

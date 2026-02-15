@@ -25,7 +25,7 @@ export function ShareButton() {
         <Button
             onClick={handleShare}
             variant="outline"
-            className="gap-2"
+            className="gap-2 bg-transparent border-white/20 text-white/80 hover:bg-teal-500/10 hover:border-teal-500/30 hover:text-teal-200"
         >
             {copied ? (
                 <>

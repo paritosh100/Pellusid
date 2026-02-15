@@ -13,6 +13,7 @@ import { createClient } from "@/lib/supabase/client";
 import { UserMenu } from "@/components/user-menu";
 import { CityAutocomplete } from "@/components/city-autocomplete";
 import type { User } from "@supabase/supabase-js";
+import type { ReadingMode } from "@/lib/types";
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence, useMotionTemplate } from "framer-motion";
 import { cn } from "@/lib/utils";
 
@@ -143,6 +144,7 @@ export default function HomePage() {
   const [birthTime, setBirthTime] = useState("");
   const [birthCity, setBirthCity] = useState("");
   const [focusArea, setFocusArea] = useState("");
+  const [mode, setMode] = useState<ReadingMode>('normal');
 
   // Birth time confirmation dialog state
   const [showBirthTimeDialog, setShowBirthTimeDialog] = useState(false);
@@ -222,6 +224,7 @@ export default function HomePage() {
         name: name.trim(),
         birthDate: birthDate.trim(),
         birthCity: birthCity.trim(),
+        mode,
       };
 
       if (birthTime.trim()) {
@@ -381,7 +384,7 @@ export default function HomePage() {
               <div className="absolute top-0 left-0 w-8 h-8 border-t border-l border-teal-500/30 rounded-tl-2xl" />
               <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-teal-500/30 rounded-br-2xl" />
 
-              <form onSubmit={handleSubmit} className="space-y-12">
+              <form onSubmit={handleSubmit} className="space-y-8">
 
                 <div className="space-y-8">
                   {/* Name Input */}
@@ -430,6 +433,34 @@ export default function HomePage() {
                   />
                 </div>
 
+                {/* Mode Toggle */}
+                <div className="flex items-center justify-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setMode('normal')}
+                    className={cn(
+                      "px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300 border",
+                      mode === 'normal'
+                        ? "bg-teal-500/20 border-teal-500/40 text-teal-200 shadow-[0_0_15px_-5px_rgba(13,148,136,0.4)]"
+                        : "bg-white/5 border-white/10 text-white/40 hover:text-white/60 hover:bg-white/10"
+                    )}
+                  >
+                    Quick Read
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setMode('stealth')}
+                    className={cn(
+                      "px-4 py-2 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300 border",
+                      mode === 'stealth'
+                        ? "bg-purple-500/20 border-purple-500/40 text-purple-200 shadow-[0_0_15px_-5px_rgba(147,51,234,0.4)]"
+                        : "bg-white/5 border-white/10 text-white/40 hover:text-white/60 hover:bg-white/10"
+                    )}
+                  >
+                    Deep Dive
+                  </button>
+                </div>
+
                 {/* Error Message */}
                 <AnimatePresence>
                   {error && (
@@ -446,7 +477,7 @@ export default function HomePage() {
                   )}
                 </AnimatePresence>
 
-                <div className="pt-4 flex justify-center">
+                <div className="flex justify-center">
                   <MagneticButton
                     type="submit"
                     disabled={isLoading}

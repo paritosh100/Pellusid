@@ -7,10 +7,12 @@ import { createClient } from './server'
 
 export type AnalyticsEventType =
     | 'reading_generated'
+    | 'stealth_reading_generated'
     | 'prompt_accepted'
     | 'prompt_rejected'
     | 'reading_regenerated'
     | 'reading_viewed'
+    | 'stealth_reading_viewed'
     | 'user_signup'
     | 'user_login';
 
