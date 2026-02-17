@@ -503,7 +503,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-gradient-to-br from-teal-900/30 via-purple-900/20 to-blue-900/30 backdrop-blur-3xl z-[60]"
+                            className="fixed inset-0 bg-[#112b28]/90 backdrop-blur-xl z-[60]"
                         />
                         {/* Welcome Card */}
                         <div className="fixed inset-0 z-[61] flex items-center justify-center p-4">

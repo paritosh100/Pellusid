@@ -53,7 +53,7 @@ export function WelcomeCard({ onDismiss }: WelcomeCardProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative flex flex-col bg-gradient-to-br from-teal-500/10 via-purple-500/5 to-blue-500/10 backdrop-blur-2xl border border-teal-500/30 rounded-2xl p-4 md:p-5 md:p-6 lg:p-8 shadow-[0_20px_60px_-12px_rgba(13,148,136,0.3)]"
+            className="relative flex flex-col bg-[#0a1f1c] border border-teal-500/30 rounded-2xl p-4 md:p-5 md:p-6 lg:p-8 shadow-[0_20px_60px_-12px_rgba(13,148,136,0.3)]"
         >
             {/* Decorative corner accents */}
             <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-teal-400/40 rounded-tl-2xl pointer-events-none" />

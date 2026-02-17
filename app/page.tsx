@@ -306,7 +306,7 @@ export default function HomePage() {
 
 
       {/* --- II. Layout: Presence & Motion Container --- */}
-      <div className="relative z-10 container mx-auto px-6 pt-32 pb-12 md:py-12 min-h-screen flex flex-col justify-start md:justify-center">
+      <div className="relative z-10 container mx-auto px-6 pt-32 pb-12 md:pt-32 md:pb-24">
 
         {/* --- Navigation: Command Hub --- */}
         <motion.header
@@ -507,6 +507,182 @@ export default function HomePage() {
           </div>
 
         </div>
+
+        {/* --- Scroll Indicator --- */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2, duration: 0.8 }}
+          className="flex flex-col items-center mt-16 md:mt-24 cursor-pointer"
+          onClick={() => document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+        >
+          <span className="text-[10px] font-bold tracking-[0.3em] uppercase text-white/30 mb-3">Scroll</span>
+          <motion.div
+            animate={{ y: [0, 8, 0] }}
+            transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <svg className="w-6 h-6 text-teal-400/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 13.5 12 21m0 0-7.5-7.5M12 21V3" />
+            </svg>
+          </motion.div>
+        </motion.div>
+
+        {/* --- III. How it Works Section --- */}
+        <section id="how-it-works" className="relative mt-32 md:mt-48 max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16 md:mb-20"
+          >
+            <span className="text-xs font-bold tracking-[0.3em] uppercase text-teal-400/80 mb-4 block">Process</span>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-teal-200/60">
+              How it Works
+            </h2>
+          </motion.div>
+
+          <div className="relative grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-6">
+            {/* Connecting line (desktop only) */}
+            <div className="hidden md:block absolute top-16 left-[20%] right-[20%] h-px bg-gradient-to-r from-transparent via-teal-500/30 to-transparent z-0" />
+
+            {[
+              {
+                step: "01",
+                title: "Enter Your Details",
+                description: "Provide your birth date, time, and city to personalize your experience.",
+                icon: (
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                  </svg>
+                ),
+              },
+              {
+                step: "02",
+                title: "Patterns Are Analyzed",
+                description: "Our engine processes your unique data points to uncover meaningful life-path patterns.",
+                icon: (
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+                  </svg>
+                ),
+              },
+              {
+                step: "03",
+                title: "Receive Insights",
+                description: "Get a personalized report covering career, relationships, and timing — tailored just for you.",
+                icon: (
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0 1 18 16.5h-2.25m-7.5 0h7.5m-7.5 0-1 3m8.5-3 1 3m0 0 .5 1.5m-.5-1.5h-9.5m0 0-.5 1.5m.75-9 3-3 2.148 2.148A12.061 12.061 0 0 1 16.5 7.605" />
+                  </svg>
+                ),
+              },
+            ].map((item, i) => (
+              <motion.div
+                key={item.step}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: i * 0.15 }}
+                className="relative z-10 flex flex-col items-center text-center group"
+              >
+                {/* Step Number Badge */}
+                <div className="relative mb-6">
+                  <div className="w-14 h-14 rounded-full bg-black/50 backdrop-blur-xl border border-teal-500/30 flex items-center justify-center text-teal-400 group-hover:border-teal-400/60 group-hover:shadow-[0_0_25px_-5px_rgba(13,148,136,0.4)] transition-all duration-500">
+                    {item.icon}
+                  </div>
+                  <span className="absolute -top-2 -right-2 text-[10px] font-mono font-bold text-teal-500/60 tracking-wider">{item.step}</span>
+                </div>
+
+                {/* Content */}
+                <div className="bg-black/30 backdrop-blur-xl border border-white/5 rounded-2xl p-6 w-full group-hover:border-teal-500/20 group-hover:bg-black/40 transition-all duration-500">
+                  <h3 className="text-lg font-bold text-white/90 mb-2 tracking-tight">{item.title}</h3>
+                  <p className="text-sm text-white/40 leading-relaxed">{item.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+
+        {/* --- IV. Features Section --- */}
+        <section className="relative mt-32 md:mt-48 max-w-5xl mx-auto pb-12">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-16 md:mb-20"
+          >
+            <span className="text-xs font-bold tracking-[0.3em] uppercase text-teal-400/80 mb-4 block">Capabilities</span>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white via-white/90 to-teal-200/60">
+              Features
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              {
+                title: "Deep Pattern Recognition",
+                description: "Advanced analysis reveals hidden correlations across multiple dimensions for breakthrough clarity.",
+                icon: (
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09ZM18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 0 0 2.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z" />
+                  </svg>
+                ),
+                gradient: "from-teal-500/20 to-emerald-500/10",
+              },
+              {
+                title: "Personalized Insights",
+                description: "Every reading is uniquely calibrated to your specific details and focus areas — no two are alike.",
+                icon: (
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                  </svg>
+                ),
+                gradient: "from-purple-500/20 to-violet-500/10",
+              },
+              {
+                title: "Privacy-First Design",
+                description: "Your data stays encrypted and is never shared. Readings are yours alone — complete confidentiality guaranteed.",
+                icon: (
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
+                  </svg>
+                ),
+                gradient: "from-cyan-500/20 to-teal-500/10",
+              },
+            ].map((feature, i) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: i * 0.15 }}
+                className="group relative bg-black/30 backdrop-blur-xl border border-white/5 rounded-2xl p-8 hover:border-teal-500/20 hover:bg-black/40 transition-all duration-500 hover:shadow-[0_0_40px_-12px_rgba(13,148,136,0.15)] hover:-translate-y-1"
+              >
+                {/* Icon Container */}
+                <div className={cn(
+                  "w-14 h-14 rounded-2xl flex items-center justify-center mb-6 border border-white/10 bg-gradient-to-br",
+                  feature.gradient,
+                  "group-hover:border-teal-500/30 group-hover:shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] transition-all duration-500"
+                )}>
+                  <span className="text-teal-400 group-hover:text-teal-300 transition-colors duration-300">{feature.icon}</span>
+                </div>
+
+                <h3 className="text-xl font-bold text-white/90 mb-3 tracking-tight group-hover:text-white transition-colors duration-300">
+                  {feature.title}
+                </h3>
+                <p className="text-sm text-white/40 leading-relaxed group-hover:text-white/50 transition-colors duration-300">
+                  {feature.description}
+                </p>
+
+                {/* Corner accent */}
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-b border-r border-white/5 rounded-br-2xl group-hover:border-teal-500/20 transition-colors duration-500" />
+              </motion.div>
+            ))}
+          </div>
+        </section>
 
       </div>
 
