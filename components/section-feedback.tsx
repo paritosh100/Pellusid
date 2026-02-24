@@ -13,36 +13,33 @@ const reactions = [
     {
         type: 'hit' as SectionReaction,
         label: 'Hit',
-        textColor: 'text-green-700 dark:text-green-400',
-        borderColor: 'border-green-200 dark:border-green-800',
-        selectedBg: 'bg-green-600 dark:bg-green-500 text-white border-green-600 dark:border-green-500',
-        hoverBg: 'hover:bg-gray-50 dark:hover:bg-gray-800'
+        selectedBg: 'bg-stitch-accent text-white border-stitch-accent',
+        hoverBorder: 'hover:border-stitch-accent/40',
+        hoverText: 'hover:text-stitch-accent'
     },
     {
         type: 'useful' as SectionReaction,
         label: 'Useful',
-        textColor: 'text-blue-700 dark:text-blue-400',
-        borderColor: 'border-blue-200 dark:border-blue-800',
-        selectedBg: 'bg-blue-600 dark:bg-blue-500 text-white border-blue-600 dark:border-blue-500',
-        hoverBg: 'hover:bg-gray-50 dark:hover:bg-gray-800'
+        selectedBg: 'bg-stitch-accent text-white border-stitch-accent',
+        hoverBorder: 'hover:border-stitch-accent/40',
+        hoverText: 'hover:text-stitch-accent'
     },
     {
         type: 'vague' as SectionReaction,
         label: 'Vague',
-        textColor: 'text-amber-700 dark:text-amber-400',
-        borderColor: 'border-amber-200 dark:border-amber-800',
-        selectedBg: 'bg-amber-600 dark:bg-amber-500 text-white border-amber-600 dark:border-amber-500',
-        hoverBg: 'hover:bg-gray-50 dark:hover:bg-gray-800'
+        selectedBg: 'bg-stitch-light-green text-stitch-accent border-stitch-accent/30',
+        hoverBorder: 'hover:border-stitch-accent/40',
+        hoverText: 'hover:text-stitch-accent'
     },
     {
         type: 'off' as SectionReaction,
         label: 'Off',
-        textColor: 'text-red-700 dark:text-red-400',
-        borderColor: 'border-red-200 dark:border-red-800',
-        selectedBg: 'bg-red-600 dark:bg-red-500 text-white border-red-600 dark:border-red-500',
-        hoverBg: 'hover:bg-gray-50 dark:hover:bg-gray-800'
+        selectedBg: 'bg-[#fafaf8] text-gray-900 border-gray-400',
+        hoverBorder: 'hover:border-red-200',
+        hoverText: 'hover:text-red-600'
     },
 ];
+
 
 export function SectionFeedback({ section, readingId }: SectionFeedbackProps) {
     const [selectedReaction, setSelectedReaction] = useState<SectionReaction | null>(null);
@@ -75,19 +72,19 @@ export function SectionFeedback({ section, readingId }: SectionFeedbackProps) {
     };
 
     return (
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-1.5">
-            {reactions.map(({ type, label, textColor, borderColor, selectedBg, hoverBg }) => (
+        <div className="flex items-center gap-1.5 flex-wrap">
+            {reactions.map(({ type, label, selectedBg, hoverBorder, hoverText }) => (
                 <button
                     key={type}
                     onClick={() => handleReaction(type)}
                     disabled={isSubmitting}
                     className={`
-            h-8 px-3 sm:h-6 sm:px-2.5 md:h-7 md:px-3 rounded-full text-xs sm:text-[10px] md:text-xs font-medium transition-all border
-            ${selectedReaction === type
+                        h-7 px-3 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all duration-300 border
+                        ${selectedReaction === type
                             ? selectedBg
-                            : `bg-white dark:bg-gray-900 ${textColor} ${borderColor} ${hoverBg}`
+                            : `bg-white text-gray-400 border-gray-100 ${hoverBorder} ${hoverText}`
                         }
-          `}
+                    `}
                 >
                     {label}
                 </button>
@@ -95,3 +92,4 @@ export function SectionFeedback({ section, readingId }: SectionFeedbackProps) {
         </div>
     );
 }
+

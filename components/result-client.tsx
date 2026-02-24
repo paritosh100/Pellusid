@@ -6,16 +6,19 @@
  */
 
 import { useState, useEffect } from "react";
+import Image from "next/image";
 import { ShareButton } from "@/components/share-button";
+
 import { RegenerateButton } from "@/components/regenerate-button";
 import { JournalPrompt } from "@/components/journal-prompt";
 import { FeedbackWidget } from "@/components/feedback-widget";
 import { SectionFeedback } from "@/components/section-feedback";
-import { AppNameFeedback } from "@/components/app-name-feedback";
 import { WelcomeCard } from "@/components/welcome-card";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { MessageSquare, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { MessageSquare, X, ChevronLeft, ChevronRight, LayoutGrid, CheckCircle2, AlertTriangle, ArrowRight, PenLine } from "lucide-react";
+
 
 interface ResultClientProps {
     reading: any;
@@ -55,12 +58,13 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
     };
 
     const sections = [
-        { id: 'coreTheme' as Section, label: 'Core Theme', icon: '◈' },
-        { id: 'strengths' as Section, label: "What's Working", icon: '✓' },
-        { id: 'frictions' as Section, label: 'Energy Drains', icon: '⚠' },
-        { id: 'next7Days' as Section, label: 'Next 7 Days', icon: '→' },
-        { id: 'journal' as Section, label: 'Journal Prompt', icon: '✎' },
+        { id: 'coreTheme' as Section, label: 'Core Theme', icon: <LayoutGrid className="w-4 h-4" /> },
+        { id: 'strengths' as Section, label: "What's Working", icon: <CheckCircle2 className="w-4 h-4" /> },
+        { id: 'frictions' as Section, label: 'Energy Drains', icon: <AlertTriangle className="w-4 h-4" /> },
+        { id: 'next7Days' as Section, label: 'Next 7 Days', icon: <ArrowRight className="w-4 h-4" /> },
+        { id: 'journal' as Section, label: 'Journal Prompt', icon: <PenLine className="w-4 h-4" /> },
     ];
+
 
     // Navigation helpers
     const currentSectionIndex = sections.findIndex(s => s.id === activeSection);
@@ -85,154 +89,166 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                 return (
                     <motion.div
                         key="coreTheme"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
-                        className="flex flex-col"
+                        className="flex flex-col h-full"
                     >
-                        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
-                            <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Core Theme</h2>
+                        <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                            <h2 className="text-3xl font-bold text-stitch-green font-playfair">Core Theme</h2>
                             <div className="hidden sm:block">
                                 <SectionFeedback section="coreTheme" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="pr-1 sm:pr-2">
-                            <p className="text-lg sm:text-base leading-relaxed text-gray-100 whitespace-pre-line">
+
+                        <div className="flex-1">
+                            <p className="text-lg leading-relaxed text-stitch-dark-green font-inter whitespace-pre-line">
                                 {reading.coreTheme}
                             </p>
                         </div>
+
                         {/* Mobile feedback pills - 2x2 grid below content */}
-                        <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
-                            <p className="text-sm text-gray-300 mb-2">What was your reaction to the Core Theme?</p>
+                        <div className="sm:hidden mt-6 pt-4 border-t border-stitch-light-green flex-shrink-0">
+                            <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wider">How does this resonate?</p>
                             <SectionFeedback section="coreTheme" readingId={readingId} />
                         </div>
                     </motion.div>
+
                 );
 
             case 'strengths':
                 return (
                     <motion.div
                         key="strengths"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
-                        className="flex flex-col"
+                        className="flex flex-col h-full"
                     >
-                        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
-                            <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">What's Working</h2>
+                        <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                            <h2 className="text-3xl font-bold text-stitch-green font-playfair">What's Working</h2>
                             <div className="hidden sm:block">
                                 <SectionFeedback section="strengths" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="pr-1 sm:pr-2">
-                            <ul className="space-y-3 sm:space-y-2">
+
+                        <div className="flex-1">
+                            <ul className="space-y-4">
                                 {reading.strengths.map((strength: string, index: number) => (
                                     <motion.li
                                         key={index}
-                                        initial={{ opacity: 0, x: -20 }}
+                                        initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
-                                        className="flex items-start gap-2 sm:gap-3"
+                                        className="flex items-start gap-4"
                                     >
-                                        <span className="text-green-400 mt-0.5 text-xl sm:text-lg flex-shrink-0 leading-none">✓</span>
-                                        <span className="text-gray-100 text-lg sm:text-base leading-relaxed">{strength}</span>
+                                        <div className="w-6 h-6 rounded-full bg-stitch-light-green flex items-center justify-center flex-shrink-0 mt-0.5">
+                                            <span className="text-stitch-accent text-sm font-bold">✓</span>
+                                        </div>
+                                        <span className="text-lg text-stitch-dark-green font-inter leading-relaxed">{strength}</span>
+
                                     </motion.li>
                                 ))}
                             </ul>
                         </div>
-                        {/* Mobile feedback pills - 2x2 grid below content */}
-                        <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
-                            <p className="text-sm text-gray-300 mb-2">What was your reaction to What's Working?</p>
+                        {/* Mobile feedback pills */}
+                        <div className="sm:hidden mt-6 pt-4 border-t border-stitch-light-green flex-shrink-0">
+                            <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wider">How does this resonate?</p>
                             <SectionFeedback section="strengths" readingId={readingId} />
                         </div>
                     </motion.div>
+
                 );
 
             case 'frictions':
                 return (
                     <motion.div
                         key="frictions"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
-                        className="flex flex-col"
+                        className="flex flex-col h-full"
                     >
-                        <div className="flex items-center justify-between mb-2 sm:mb-3 flex-shrink-0">
-                            <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Energy Drains</h2>
+                        <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                            <h2 className="text-3xl font-bold text-stitch-green font-playfair">Energy Drains</h2>
                             <div className="hidden sm:block">
                                 <SectionFeedback section="frictions" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="pr-1 sm:pr-2">
-                            <ul className="space-y-3 sm:space-y-2">
+
+                        <div className="flex-1">
+                            <ul className="space-y-4">
                                 {reading.frictions.map((friction: string, index: number) => (
                                     <motion.li
                                         key={index}
-                                        initial={{ opacity: 0, x: -20 }}
+                                        initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
-                                        className="flex items-start gap-2 sm:gap-3"
+                                        className="flex items-start gap-4"
                                     >
-                                        <span className="text-amber-400 mt-0.5 text-xl sm:text-lg flex-shrink-0 leading-none">⚠</span>
-                                        <span className="text-gray-100 text-lg sm:text-base leading-relaxed">{friction}</span>
+                                        <div className="w-6 h-6 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0 mt-0.5 border border-amber-100">
+                                            <span className="text-amber-600 text-xs font-bold">⚠</span>
+                                        </div>
+                                        <span className="text-lg text-stitch-dark-green font-inter leading-relaxed">{friction}</span>
                                     </motion.li>
                                 ))}
                             </ul>
                         </div>
-                        {/* Mobile feedback pills - 2x2 grid below content */}
-                        <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
-                            <p className="text-sm text-gray-300 mb-2">What was your reaction to the Energy Drains?</p>
+                        {/* Mobile feedback pills */}
+                        <div className="sm:hidden mt-6 pt-4 border-t border-stitch-light-green flex-shrink-0">
+                            <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wider">How does this resonate?</p>
                             <SectionFeedback section="frictions" readingId={readingId} />
                         </div>
                     </motion.div>
+
                 );
 
             case 'next7Days':
                 return (
                     <motion.div
                         key="next7Days"
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
                         transition={{ duration: 0.3 }}
-                        className="flex flex-col"
+                        className="flex flex-col h-full"
                     >
-                        <div className="flex items-center justify-between mb-2 flex-shrink-0">
-                            <div>
-                                <h2 className="text-xl sm:text-2xl font-bold text-teal-300 tracking-wide">Next 7 Days</h2>
-                                <p className="text-gray-200 text-xs sm:text-xs mt-1">Focus areas to consider</p>
-                            </div>
+                        <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                            <h2 className="text-3xl font-bold text-stitch-green font-playfair">Next 7 Days</h2>
                             <div className="hidden sm:block">
                                 <SectionFeedback section="next7Days" readingId={readingId} />
                             </div>
                         </div>
-                        <div className="pr-1 sm:pr-2 mt-2">
-                            <ul className="space-y-3 sm:space-y-2">
+
+                        <div className="flex-1">
+                            <ul className="space-y-4">
                                 {reading.next7Days.map((focus: string, index: number) => (
                                     <motion.li
                                         key={index}
-                                        initial={{ opacity: 0, x: -20 }}
+                                        initial={{ opacity: 0, x: -10 }}
                                         animate={{ opacity: 1, x: 0 }}
                                         transition={{ delay: index * 0.05 }}
-                                        className="flex items-start gap-2 sm:gap-3"
+                                        className="flex items-start gap-4"
                                     >
-                                        <span className="text-teal-300 mt-0.5 font-bold text-lg sm:text-base flex-shrink-0 leading-none">
-                                            {index + 1}.
-                                        </span>
-                                        <span className="text-gray-100 text-lg sm:text-base leading-relaxed">{focus}</span>
+                                        <div className="w-8 h-8 rounded-full bg-stitch-light-green flex items-center justify-center flex-shrink-0 mt-0.5 text-stitch-accent font-bold text-sm">
+                                            {index + 1}
+                                        </div>
+                                        <span className="text-lg text-stitch-dark-green font-inter leading-relaxed">{focus}</span>
+
                                     </motion.li>
                                 ))}
                             </ul>
                         </div>
-                        {/* Mobile feedback pills - 2x2 grid below content */}
-                        <div className="sm:hidden mt-3 pt-3 border-t border-white/10 flex-shrink-0">
-                            <p className="text-sm text-gray-300 mb-2">What was your reaction to the Next 7 Days?</p>
+                        {/* Mobile feedback pills */}
+                        <div className="sm:hidden mt-6 pt-4 border-t border-stitch-light-green flex-shrink-0">
+                            <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wider">How does this resonate?</p>
                             <SectionFeedback section="next7Days" readingId={readingId} />
                         </div>
                     </motion.div>
+
                 );
 
             case 'journal':
@@ -260,78 +276,104 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
     };
 
     return (
-        <div className="flex h-screen overflow-hidden">
+        <div className="flex h-screen overflow-hidden bg-[#fafaf8] font-inter">
             {/* Left Sidebar - Navigation */}
-            <aside className="hidden lg:flex lg:flex-col w-56 bg-black/70 backdrop-blur-2xl border-r border-white/10 flex-shrink-0">
-                <div className="p-4 border-b border-white/10 flex-shrink-0">
-                    <a href="/" className="group inline-block">
-                        <span className="text-xl font-bold tracking-tighter bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent group-hover:to-teal-100 transition-all">
-                            PELLUCID
-                        </span>
-                        <span className="ml-1.5 text-[10px] text-gray-300 tracking-[0.2em]">INSIGHTS</span>
+            <aside className="hidden lg:flex lg:flex-col w-64 bg-[#fcfcfb] border-r border-[#e4e4e0] flex-shrink-0">
+                <div className="p-8 flex-shrink-0">
+                    <a href="/" className="flex items-center gap-2">
+                        <Image
+                            src="/Abstract_intuitive.png"
+                            alt="InsightBridge Logo"
+                            width={32}
+                            height={32}
+                            className="rounded-lg object-contain"
+                        />
+                        <span className="text-sm font-bold tracking-widest text-stitch-dark-green font-inter uppercase text-nowrap">InsightBridge</span>
                     </a>
+
+
                 </div>
 
-                <nav className="flex-1 p-3 space-y-1.5 min-h-0">
+
+
+                <nav className="flex-1 px-4 space-y-2">
                     {sections.map((section) => (
                         <button
                             key={section.id}
                             onClick={() => setActiveSection(section.id)}
                             className={cn(
-                                "w-full text-left px-3 py-2 rounded-lg transition-all duration-300 flex items-center gap-2.5",
+                                "w-full text-left px-4 py-3 rounded-xl transition-all duration-300 flex items-center gap-3 group",
                                 activeSection === section.id
-                                    ? "bg-teal-500/30 border border-teal-400/50 text-teal-100 shadow-[0_0_15px_-5px_rgba(13,148,136,0.4)]"
-                                    : "text-gray-200 hover:text-white hover:bg-white/10 border border-transparent"
+                                    ? "bg-stitch-accent text-white shadow-lg shadow-stitch-accent/20"
+                                    : "text-[#666] hover:text-stitch-accent hover:bg-stitch-light-green"
                             )}
                         >
-                            <span className="text-base">{section.icon}</span>
-                            <span className="font-medium text-xs">{section.label}</span>
+                            <span className={cn(
+                                "p-1.5 rounded-lg transition-colors",
+                                activeSection === section.id ? "bg-white/20 text-white" : "bg-white border border-[#eee] text-[#888] group-hover:text-stitch-accent group-hover:border-stitch-accent/20"
+                            )}>
+                                {section.icon}
+                            </span>
+                            <span className="font-bold text-[10px] tracking-[0.15em] uppercase font-inter">{section.label}</span>
                         </button>
+
+
                     ))}
                 </nav>
 
-                <div className="p-3 border-t border-white/10 flex-shrink-0">
+                <div className="p-6 mt-auto">
                     <a
                         href="/"
-                        className="block text-center text-xs text-gray-200 hover:text-white transition-colors py-1.5"
+                        className="flex items-center gap-2 text-xs font-bold text-[#888] hover:text-stitch-accent transition-colors uppercase tracking-widest font-inter"
                     >
-                        ← New Reading
+                        <ChevronLeft className="w-4 h-4" />
+                        New Reading
                     </a>
+
                 </div>
+
             </aside>
 
             {/* Mobile Navigation - Top Bar */}
-            <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-black/70 backdrop-blur-2xl border-b border-white/10">
+            <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100">
                 <div className="p-3">
-                    <div className="flex items-center justify-between mb-2">
-                        <a href="/" className="group inline-block">
-                            <span className="text-lg font-bold tracking-tighter bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent">
-                                PELLUCID
-                            </span>
-                            <span className="ml-1.5 text-[10px] text-gray-300 tracking-[0.2em]">INSIGHTS</span>
+                    <div className="flex items-center justify-between">
+                        <a href="/" className="flex items-center gap-2">
+                            <Image
+                                src="/Abstract_intuitive.png"
+                                alt="InsightBridge Logo"
+                                width={24}
+                                height={24}
+                                className="rounded-md object-contain"
+                            />
+                            <span className="text-[10px] font-bold tracking-widest text-stitch-dark-green uppercase">InsightBridge</span>
                         </a>
+
+
                         <button
                             onClick={() => setIsRightPanelOpen(true)}
-                            className="px-3 py-1.5 bg-white/5 rounded-lg text-teal-300 hover:text-white hover:bg-white/10 transition-all border border-white/10 text-xs font-medium"
+                            className="px-3 py-1.5 bg-stitch-light-green rounded-lg text-stitch-green hover:bg-stitch-green hover:text-white transition-all border border-stitch-green/20 text-[10px] font-bold uppercase tracking-wider"
                         >
-                            we need your feedback!
+                            Help us improve
                         </button>
                     </div>
+
                     <div className="hidden gap-1.5 overflow-x-auto pb-1 scrollbar-hide">
                         {sections.map((section) => (
                             <button
                                 key={section.id}
                                 onClick={() => setActiveSection(section.id)}
                                 className={cn(
-                                    "px-3 py-2 rounded-lg whitespace-nowrap text-sm transition-all duration-300 flex items-center gap-1.5 border",
+                                    "px-3 py-2 rounded-lg whitespace-nowrap text-[10px] font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-1.5 border",
                                     activeSection === section.id
-                                        ? "bg-teal-500/30 border-teal-400/50 text-teal-100"
-                                        : "text-gray-200 bg-white/5 border-transparent"
+                                        ? "bg-stitch-green text-white border-stitch-green shadow-sm"
+                                        : "text-stitch-green/60 bg-stitch-light-green border-stitch-green/10"
                                 )}
                             >
-                                <span className="text-base">{section.icon}</span>
+                                <span className="p-0.5 rounded bg-white/20">{section.icon}</span>
                                 <span>{section.label}</span>
                             </button>
+
                         ))}
                     </div>
                 </div>
@@ -340,42 +382,66 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
             {/* Main Content Area - Fixed height, no scroll */}
             {/* Main Content Area - Scrollable */}
             <main className="flex-1 flex flex-col pt-16 lg:pt-0 pb-16 lg:pb-0 overflow-y-auto relative">
+                <div className="flex flex-col p-6 lg:py-10 lg:px-12 max-w-5xl mx-auto w-full">
 
-                <div className="flex flex-col p-0 sm:p-4 lg:p-6">
-                    {/* Header - Fixed */}
-                    <div className="mb-2 sm:mb-4 flex-shrink-0 px-4 sm:px-0 pt-2 sm:pt-0">
-                        <h1 className="text-2xl lg:text-3xl font-black tracking-tighter text-white leading-tight">
-                            {reading.headline}
+                    {/* Header */}
+                    <header className="mb-8">
+                        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stitch-light-green border border-[#d0ddd3] mb-4">
+
+                            <span className="w-1 h-1 rounded-full bg-stitch-accent" />
+                            <span className="text-[10px] font-bold tracking-[0.15em] text-stitch-accent uppercase">WEEKLY INSIGHTS</span>
+                        </div>
+                        <h1 className="text-5xl lg:text-7xl font-bold text-stitch-dark-green font-playfair leading-[1.1] tracking-tight">
+                            {reading.headline.split(' ').map((word: string, i: number) => {
+                                // Matching app/page.tsx two-tone style
+                                const isGreen = i >= reading.headline.split(' ').length - 2;
+                                return (
+                                    <span key={i} className={cn(isGreen ? "text-stitch-green italic font-medium" : "text-stitch-dark-green")}>
+                                        {word}{' '}
+                                    </span>
+                                );
+                            })}
                         </h1>
-                    </div>
+                    </header>
 
 
-                    {/* Dynamic Content - Flexible height with darker background */}
+
+                    {/* Dynamic Content Card */}
                     <div className={cn(
-                        "sm:bg-[#0f2f2a]/40 sm:backdrop-blur-md sm:border sm:border-teal-500/20 sm:rounded-xl lg:p-6 mb-1 sm:mb-3",
-                        activeSection === 'journal' ? "p-3 sm:p-4" : "p-3 sm:p-4"
+                        "bg-white rounded-[2rem] shadow-[0_8px_40px_-12px_rgba(0,0,0,0.08)] border border-[#e4e4e0] p-4 sm:p-6 lg:p-10 mb-8 relative overflow-hidden",
+                        activeSection === 'journal' ? "min-h-[400px]" : "min-h-[200px]"
                     )}>
+
+
+
+                        {/* Decorative background element */}
+                        <div className="absolute top-0 right-0 w-64 h-64 bg-stitch-light-green/30 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl pointer-events-none" />
+
                         <AnimatePresence mode="wait">
                             {!showWelcomeCard && renderContent()}
                         </AnimatePresence>
                     </div>
 
-
-
-                    {/* Disclaimer - Fixed (hidden when welcome card is shown) */}
+                    {/* Disclaimer at bottom of content */}
                     {!showWelcomeCard && (
-                        <div className="text-center p-2 sm:p-3 bg-black/30 backdrop-blur-md border border-white/10 rounded-xl flex-shrink-0">
-                            <p className="text-[10px] text-gray-300 leading-relaxed">
-                                {reading.disclaimer}
+                        <div className="flex items-center justify-between px-2 text-gray-500">
+                            <p className="text-[10px] uppercase font-bold tracking-widest leading-relaxed">
+                                INSIGHTBRIDGE © 2024
                             </p>
+
+                            {/* <div className="flex gap-1">
+                                <span className="w-1.5 h-1.5 rounded-full bg-stitch-green/40" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-stitch-green/20" />
+                                <span className="w-1.5 h-1.5 rounded-full bg-stitch-green/10" />
+                            </div> */}
                         </div>
                     )}
-
                 </div>
             </main>
 
+
             {/* Mobile Navigation Bar - Fixed at bottom */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-black/80 backdrop-blur-xl border-t border-white/10 flex items-center justify-between px-6 z-40">
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-xl border-t border-gray-100 flex items-center justify-between px-6 z-40">
                 {/* Left Arrow */}
                 <motion.button
                     onClick={goToPreviousSection}
@@ -385,16 +451,15 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                     transition={{ duration: 0.3 }}
                     className={cn(
                         "w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300",
-                        "bg-white/5 border border-white/20",
-                        !isFirstSection && "hover:bg-teal-500/20 hover:border-teal-500/40 hover:shadow-[0_0_20px_-5px_rgba(13,148,136,0.4)]",
-                        "active:scale-95",
-                        isFirstSection && "cursor-not-allowed"
+                        "bg-gray-50 border border-gray-200",
+                        !isFirstSection && "hover:bg-stitch-light-green hover:border-stitch-green/30 active:scale-95",
+                        isFirstSection && "opacity-30 cursor-not-allowed"
                     )}
                     aria-label="Previous section"
                 >
                     <ChevronLeft className={cn(
                         "w-6 h-6 transition-colors",
-                        isFirstSection ? "text-gray-600" : "text-teal-300"
+                        isFirstSection ? "text-gray-300" : "text-stitch-green"
                     )} />
                 </motion.button>
 
@@ -406,8 +471,8 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                             className={cn(
                                 "h-1.5 rounded-full transition-all duration-300",
                                 activeSection === section.id
-                                    ? "w-8 bg-teal-400"
-                                    : "w-1.5 bg-white/20"
+                                    ? "w-8 bg-stitch-green"
+                                    : "w-1.5 bg-gray-200"
                             )}
                         />
                     ))}
@@ -422,36 +487,33 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                     transition={{ duration: 0.3 }}
                     className={cn(
                         "w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300",
-                        "bg-white/5 border border-white/20",
-                        !isLastSection && "hover:bg-teal-500/20 hover:border-teal-500/40 hover:shadow-[0_0_20px_-5px_rgba(13,148,136,0.4)]",
-                        "active:scale-95",
-                        isLastSection && "cursor-not-allowed"
+                        "bg-gray-50 border border-gray-200",
+                        !isLastSection && "hover:bg-stitch-light-green hover:border-stitch-green/30 active:scale-95",
+                        isLastSection && "opacity-30 cursor-not-allowed"
                     )}
                     aria-label="Next section"
                 >
                     <ChevronRight className={cn(
                         "w-6 h-6 transition-colors",
-                        isLastSection ? "text-gray-600" : "text-teal-300"
+                        isLastSection ? "text-gray-300" : "text-stitch-green"
                     )} />
                 </motion.button>
             </div>
 
+
             {/* Right Sidebar - Compact, no scroll */}
-            <aside className="hidden xl:flex xl:flex-col w-72 bg-black/70 backdrop-blur-2xl border-l border-white/10 flex-shrink-0 h-screen">
-                <div className="p-3 flex flex-col h-full min-h-0">
-                    <h3 className="text-sm font-bold text-white mb-3 flex-shrink-0">Help Us Improve</h3>
+            <aside className="hidden xl:flex xl:flex-col w-80 bg-white border-l border-gray-100 flex-shrink-0 h-screen">
+                <div className="p-6 flex flex-col h-full overflow-y-auto scrollbar-hide">
+                    <h3 className="text-[10px] font-bold tracking-[0.2em] text-stitch-accent/90 uppercase mb-6 font-inter">Help Us Improve</h3>
 
-                    <div className="flex-1 flex flex-col gap-3 min-h-0">
-                        <div className="flex-shrink-0">
-                            <AppNameFeedback />
-                        </div>
 
-                        <div className="flex-shrink-0">
-                            <FeedbackWidget readingId={readingId} />
-                        </div>
+
+                    <div className="space-y-6">
+                        <FeedbackWidget readingId={readingId} />
                     </div>
                 </div>
             </aside>
+
 
             {/* Mobile Right Panel - Slide-over */}
             <AnimatePresence>
@@ -463,7 +525,8 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsRightPanelOpen(false)}
-                            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 lg:hidden"
+                            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 lg:hidden"
+
                         />
                         {/* Panel */}
                         <motion.div
@@ -471,25 +534,25 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                            className="fixed top-0 right-0 bottom-0 w-[85vw] sm:w-96 bg-[#0a1f1c] border-l border-white/10 z-[51] shadow-2xl lg:hidden flex flex-col"
+                            className="fixed top-0 right-0 bottom-0 w-[85vw] sm:w-96 bg-white border-l border-gray-100 z-[51] shadow-2xl lg:hidden flex flex-col"
                         >
-                            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-black/20">
-                                <h3 className="font-bold text-white flex items-center gap-2">
-                                    <MessageSquare className="w-4 h-4 text-teal-400" />
+                            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                                <h3 className="font-bold text-[#1a1a1a] flex items-center gap-2">
+                                    <MessageSquare className="w-4 h-4 text-stitch-accent" />
                                     Feedback
                                 </h3>
                                 <button
                                     onClick={() => setIsRightPanelOpen(false)}
-                                    className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+                                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-[#1a1a1a]"
                                 >
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
-                            <div className="p-4 space-y-4 overflow-y-auto flex-1">
-                                <AppNameFeedback />
+                            <div className="p-6 space-y-6 overflow-y-auto flex-1 bg-white">
                                 <FeedbackWidget readingId={readingId} />
                             </div>
                         </motion.div>
+
                     </>
                 )}
             </AnimatePresence>
@@ -503,7 +566,7 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-[#112b28]/90 backdrop-blur-xl z-[60]"
+                            className="fixed inset-0 bg-[#00000]/90 backdrop-blur-xl z-[60]"
                         />
                         {/* Welcome Card */}
                         <div className="fixed inset-0 z-[61] flex items-center justify-center p-4">

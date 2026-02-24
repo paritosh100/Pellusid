@@ -35,7 +35,8 @@ export function UserMenu({ user }: UserMenuProps) {
 
     return (
         <div className="flex items-center gap-2 md:gap-4">
-            <div className="text-sm text-gray-700 dark:text-gray-300 hidden md:block">
+            <div className="text-sm text-[#666] hidden md:block">
+
                 <span className="font-medium">{user.email}</span>
             </div>
             <Button
@@ -43,10 +44,11 @@ export function UserMenu({ user }: UserMenuProps) {
                 disabled={isLoading}
                 variant="outline"
                 size="sm"
-                className="border-white/20 text-white bg-transparent hover:bg-white/10 hover:text-white hover:border-white/40"
+                className="rounded-full border-[#e4e4e0] text-[#444] bg-white hover:bg-gray-50 hover:text-[#1a1a1a] hover:border-[#d0ddd3] px-4 font-medium"
             >
                 {isLoading ? "Logging out..." : "Logout"}
             </Button>
         </div>
+
     );
 }

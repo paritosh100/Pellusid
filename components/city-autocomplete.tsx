@@ -132,30 +132,19 @@ export const CityAutocomplete = ({
     };
 
     return (
-        <div className="relative group perspective-500">
-            <motion.div
-                initial={false}
-                animate={{
-                    scale: isFocused || hasValue ? 1.02 : 1,
-                    rotateX: isFocused ? 2 : 0,
-                    y: isFocused ? -2 : 0,
-                }}
-                className="relative"
-            >
-                <label
-                    htmlFor={id}
-                    className={cn(
-                        "absolute left-0 transition-all duration-500 ease-out pointer-events-none",
-                        isFocused || hasValue
-                            ? "-top-6 text-xs text-teal-400 font-bold tracking-widest uppercase glow-text"
-                            : "top-3 text-2xl font-light text-gray-500 group-hover:text-gray-400"
-                    )}
-                >
-                    {label}{" "}
-                    {required && (
-                        <span className="text-red-400/50 text-[10px] align-top">*</span>
-                    )}
-                </label>
+        <div className="relative">
+            <div className="relative">
+                {label && (
+                    <label
+                        htmlFor={id}
+                        className="block text-sm font-medium text-[#333] mb-1.5"
+                    >
+                        {label}{" "}
+                        {required && (
+                            <span className="text-red-400 text-xs">*</span>
+                        )}
+                    </label>
+                )}
 
                 <input
                     ref={inputRef}
@@ -173,38 +162,26 @@ export const CityAutocomplete = ({
                     }}
                     onBlur={() => setIsFocused(false)}
                     autoComplete="off"
-                    className={cn(
-                        "w-full bg-transparent border-b border-white/10 py-3 text-lg text-white/90 placeholder-transparent focus:outline-none focus:border-teal-500/50 transition-all duration-500",
-                        "font-mono tracking-tight",
-                        isFocused || hasValue ? "opacity-100" : "opacity-0 cursor-text"
-                    )}
+                    className="w-full px-4 py-3 rounded-xl border border-[#ddd] bg-[#fafaf8] text-[#1a1a1a] text-sm placeholder:text-[#bbb] focus:outline-none focus:border-[#4a7c59] focus:ring-2 focus:ring-[#4a7c59]/10 transition-all duration-200"
                     placeholder={placeholder}
                 />
-
-                {/* Click target helper when empty */}
-                {!isFocused && !hasValue && (
-                    <div
-                        className="absolute inset-0 cursor-text"
-                        onClick={() => inputRef.current?.focus()}
-                    />
-                )}
-            </motion.div>
+            </div>
 
             {/* Dropdown */}
             <AnimatePresence>
                 {showDropdown && (
                     <motion.div
                         ref={dropdownRef}
-                        initial={{ opacity: 0, y: -10 }}
+                        initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        transition={{ duration: 0.2 }}
-                        className="absolute z-50 w-full mt-2 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden"
+                        exit={{ opacity: 0, y: -5 }}
+                        transition={{ duration: 0.15 }}
+                        className="absolute z-50 w-full mt-1.5 bg-white border border-[#e4e4e0] rounded-xl shadow-[0_8px_24px_-6px_rgba(0,0,0,0.08)] overflow-hidden"
                     >
                         {isLoading ? (
-                            <div className="px-4 py-3 text-sm text-white/50 flex items-center gap-2">
+                            <div className="px-4 py-3 text-sm text-[#999] flex items-center gap-2">
                                 <svg
-                                    className="animate-spin h-4 w-4 text-teal-400"
+                                    className="animate-spin h-4 w-4 text-[#4a7c59]"
                                     xmlns="http://www.w3.org/2000/svg"
                                     fill="none"
                                     viewBox="0 0 24 24"
@@ -235,10 +212,10 @@ export const CityAutocomplete = ({
                                         transition={{ delay: index * 0.03 }}
                                         onClick={() => selectCity(city)}
                                         className={cn(
-                                            "px-4 py-3 cursor-pointer transition-all duration-200 font-mono text-sm",
+                                            "px-4 py-3 cursor-pointer transition-all duration-150 text-sm",
                                             selectedIndex === index
-                                                ? "bg-teal-500/20 text-teal-200 border-l-2 border-teal-500"
-                                                : "text-white/70 hover:bg-white/5 hover:text-white border-l-2 border-transparent"
+                                                ? "bg-[#e8f0ea] text-[#3d6b4a] border-l-2 border-[#4a7c59]"
+                                                : "text-[#555] hover:bg-[#f5f5f2] hover:text-[#1a1a1a] border-l-2 border-transparent"
                                         )}
                                     >
                                         {city.formatted}
@@ -246,7 +223,7 @@ export const CityAutocomplete = ({
                                 ))}
                             </div>
                         ) : (
-                            <div className="px-4 py-3 text-sm text-white/50">
+                            <div className="px-4 py-3 text-sm text-[#999]">
                                 No cities found
                             </div>
                         )}

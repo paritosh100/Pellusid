@@ -9,7 +9,9 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SectionFeedback } from "@/components/section-feedback";
+import { MessageSquare, ArrowRight } from "lucide-react";
 import type { UserInput, ReadingMode } from "@/lib/types";
+
 
 interface JournalPromptProps {
     journalPrompt: string;
@@ -101,54 +103,63 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswe
     };
 
     return (
-        <Card className="mb-0 sm:mb-6 shadow-none sm:shadow-lg border-0 bg-transparent sm:bg-gradient-to-br from-[#50ffb1]/20 to-[#8ae1fc]/20 dark:from-[#3c896d]/40 dark:to-[#546d64]/40">
-            <CardHeader className="pb-2">
+        <Card className="mb-0 sm:mb-8 shadow-[0_4px_20px_-5px_rgba(0,0,0,0.05)] border border-gray-100 bg-gray-50/50 rounded-2xl overflow-hidden">
+            <CardHeader className="pb-2 pt-2 px-6">
                 <div className="flex items-center justify-between">
-                    <CardTitle className="text-xl font-bold bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent">Career Reflection</CardTitle>
+                    <CardTitle className="text-4xl font-bold text-stitch-green font-playfair">Interpreting with AI</CardTitle>
                 </div>
             </CardHeader>
-            <CardContent className="space-y-4">
+
+            <CardContent className="space-y-4 px-6 pb-8">
+
                 {showOptions && !answer && (
                     <>
-                        <p className="text-sm text-white mb-4" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>
-                            Choose a question to explore, or ask your own:
+                        <p className="text-sm text-gray-600 font-inter">
+                            Choose a dimension to deepen your insight, or ask your own:
                         </p>
 
+
                         {/* Predefined Questions */}
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                             {CAREER_QUESTIONS.map((question, index) => (
                                 <button
                                     key={index}
                                     onClick={() => handleQuestionSelect(question)}
-                                    className={`w-full text-left p-2 sm:p-3 rounded-lg border-2 transition-all duration-200 ${selectedQuestion === question
-                                        ? "border-teal-400 bg-teal-500/20"
-                                        : "border-white/20 hover:border-teal-400/60 hover:bg-teal-500/10"
+                                    className={`w-full text-left p-3 rounded-xl border transition-all duration-300 font-inter ${selectedQuestion === question
+                                        ? "border-stitch-accent bg-stitch-light-green text-stitch-accent"
+                                        : "border-[#f0f0f0] bg-white hover:border-stitch-accent/30 hover:bg-gray-50 text-gray-700"
                                         }`}
                                 >
-                                    <p className="text-sm text-white leading-relaxed" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
+                                    <p className="text-sm font-medium">
                                         {question}
                                     </p>
                                 </button>
+
                             ))}
                         </div>
+
 
                         {/* Custom Question Option */}
                         {!showCustomInput ? (
                             <button
                                 onClick={handleCustomQuestionClick}
-                                className="w-full text-left p-2 sm:p-3 rounded-lg border-2 border-dashed border-white/30 hover:border-teal-400/60 hover:bg-teal-500/10 transition-all duration-200"
+                                className="w-full text-left p-3 rounded-xl border border-dashed border-gray-200 hover:border-stitch-accent/40 hover:bg-gray-50 transition-all duration-300 group"
                             >
-                                <p className="text-sm text-white italic" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
+                                <p className="text-sm text-gray-500 group-hover:text-stitch-accent italic font-inter font-medium">
                                     ✏️ Ask your own question...
                                 </p>
                             </button>
+
+
                         ) : (
                             <div className="space-y-2">
                                 <textarea
                                     value={customQuestion}
                                     onChange={(e) => setCustomQuestion(e.target.value)}
                                     placeholder="Type your career question here..."
-                                    className="w-full p-3 rounded-lg border-2 border-[#3c896d] dark:border-[#50ffb1] bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-[#3c896d] dark:focus:ring-[#50ffb1] min-h-[80px] resize-none"
+                                    className="w-full p-4 rounded-xl border-2 border-stitch-accent bg-white text-stitch-dark-green focus:outline-none focus:ring-4 focus:ring-stitch-accent/10 min-h-[100px] resize-none font-inter text-sm"
+
+
                                     autoFocus
                                 />
                                 <button
@@ -175,9 +186,10 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswe
                             <Button
                                 onClick={handleExplore}
                                 disabled={isLoading || (!selectedQuestion && !customQuestion.trim())}
-                                className="bg-teal-600 hover:bg-teal-700 text-white px-6 py-2 transition-all duration-300 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
-                                style={{ textShadow: '0 0 10px rgba(255,255,255,0.4)' }}
+                                className="flex-1 bg-stitch-accent hover:bg-stitch-accent/90 text-white font-bold py-6 rounded-2xl shadow-lg shadow-stitch-accent/20 transition-all active:scale-[0.98]"
                             >
+
+
                                 {isLoading ? (
                                     <span className="flex items-center gap-2">
                                         <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
@@ -206,100 +218,91 @@ export function JournalPrompt({ journalPrompt, userInputs, readingId, savedAnswe
                                 onClick={handleSkip}
                                 disabled={isLoading}
                                 variant="outline"
-                                className="px-6 py-2 border-2 border-teal-400/50 bg-black/20 text-white hover:bg-teal-500/20 hover:border-teal-400 transition-all duration-300"
-                                style={{ textShadow: '0 0 10px rgba(255,255,255,0.4)' }}
+                                className="flex-1 py-6 rounded-2xl border-2 border-gray-100 hover:border-gray-200 hover:bg-gray-50 text-gray-500 font-bold transition-all"
                             >
                                 Skip
                             </Button>
+
                         </div>
 
                         {/* Feedback button */}
-                        <div className="mt-4 pt-4 border-t border-teal-500/30">
+                        <div className="mt-8 pt-6 border-t border-[#e4e4e0]">
                             <button
                                 onClick={onOpenFeedback}
-                                className="w-full px-6 py-3 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 hover:from-teal-500/30 hover:to-emerald-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] flex items-center justify-center gap-2"
+                                className="w-full flex items-center justify-center gap-2 text-[10px] font-bold text-gray-400 hover:text-stitch-accent uppercase tracking-[0.2em] transition-colors"
                             >
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                </svg>
+                                <MessageSquare className="w-3 h-3" />
                                 Share Your Feedback
                             </button>
+
                         </div>
+
                     </>
                 )}
 
-                {/* Answer Display */}
                 {answer && (
-                    <div className="space-y-4">
-                        <div className="p-4 bg-teal-900/30 rounded-lg border border-teal-500/30">
-                            <p className="text-sm font-medium text-white mb-2" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>
-                                Your Question:
+                    <div className="space-y-8">
+                        <div className="p-6 bg-stitch-light-green/50 rounded-2xl border border-stitch-green/10">
+                            <p className="text-[10px] font-bold uppercase tracking-widest text-stitch-green/80 mb-3">
+                                YOUR QUESTION
                             </p>
-                            <p className="text-base italic text-white" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
-                                {selectedQuestion || customQuestion || journalPrompt}
+
+                            <p className="text-xl font-bold font-inter text-stitch-dark-green">
+                                "{selectedQuestion || customQuestion || journalPrompt}"
                             </p>
+
                         </div>
 
-                        <div className="pt-4 border-t border-teal-500/30">
-                            <h3 className="text-lg font-semibold text-white mb-3" style={{ textShadow: '0 0 10px rgba(255,255,255,0.3)' }}>
+                        <div className="space-y-4">
+                            <h3 className="text-2xl font-bold text-stitch-green font-playfair">
                                 Pattern Insights
                             </h3>
-                            <div className="prose prose-sm dark:prose-invert max-w-none">
-                                <p className="text-white leading-relaxed whitespace-pre-line text-base" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
+                            <div className="prose prose-sm max-w-none">
+                                <p className="text-lg text-stitch-dark-green font-inter leading-relaxed whitespace-pre-line">
                                     {answer}
                                 </p>
                             </div>
                         </div>
 
 
-                        {/* Mobile feedback pills - 2x2 grid below content */}
-                        <div className="mt-4 pt-4 border-t border-teal-500/30">
+
+                        {/* Feedback pills */}
+                        <div className="pt-8 border-t border-gray-100 flex items-center justify-between">
+                            <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Resonates?</span>
                             <SectionFeedback section="journalPrompt" readingId={readingId} />
                         </div>
 
-                        {/* Feedback button */}
-                        <div className="mt-4 pt-4 border-t border-teal-500/30">
-                            <button
-                                onClick={onOpenFeedback}
-                                className="w-full px-6 py-3 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 hover:from-teal-500/30 hover:to-emerald-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] flex items-center justify-center gap-2"
-                            >
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                </svg>
-                                Share Your Feedback
-                            </button>
-                        </div>
+
                     </div>
                 )}
 
                 {/* Message when skipped */}
                 {!showOptions && !answer && (
-                    <div className="space-y-4">
-                        <p className="text-sm text-gray-400 text-center italic mb-4">
-                            You can always explore career questions later.
+                    <div className="py-12 flex flex-col items-center text-center">
+                        <div className="w-16 h-16 rounded-full bg-gray-50 flex items-center justify-center mb-6">
+                            <ArrowRight className="w-8 h-8 text-gray-300" />
+                        </div>
+                        <p className="text-lg text-gray-500 italic mb-8 font-inter">
+                            You can always explore deeper career insights later.
                         </p>
-                        <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="flex flex-col sm:flex-row gap-4 w-full max-w-md">
                             <a
                                 href="/"
-                                className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 hover:from-teal-500/30 hover:to-emerald-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] flex items-center justify-center gap-2 text-center"
+                                className="flex-1 bg-stitch-accent hover:bg-stitch-accent/90 text-white font-bold py-4 rounded-2xl shadow-lg shadow-stitch-accent/20 transition-all text-center uppercase tracking-widest text-xs"
                             >
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                                </svg>
                                 Go Home
                             </a>
+
                             <button
                                 onClick={onOpenFeedback}
-                                className="flex-1 px-6 py-3 bg-gradient-to-r from-teal-500/20 to-emerald-500/20 hover:from-teal-500/30 hover:to-emerald-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm tracking-wide transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] flex items-center justify-center gap-2"
+                                className="flex-1 border-2 border-gray-100 hover:border-gray-200 hover:bg-gray-50 text-gray-500 font-bold py-4 rounded-2xl transition-all uppercase tracking-widest text-xs"
                             >
-                                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                                </svg>
-                                Share Your Feedback
+                                Feedback
                             </button>
                         </div>
                     </div>
                 )}
+
             </CardContent>
         </Card>
     );

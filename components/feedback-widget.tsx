@@ -41,22 +41,25 @@ export function FeedbackWidget({ readingId }: FeedbackWidgetProps) {
 
     if (isSubmitted) {
         return (
-            <div className="p-3 text-center bg-teal-900/30 border border-teal-500/30 rounded-lg">
-                <p className="text-xs text-teal-200" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
+            <div className="p-6 text-center bg-stitch-light-green rounded-2xl border border-stitch-accent/20">
+                <p className="text-sm font-semibold text-stitch-accent">
                     ✓ Thank you for your feedback!
                 </p>
             </div>
+
         );
     }
 
     return (
-        <div className="space-y-3 p-3 bg-[#0f2f2a]/60 backdrop-blur-sm rounded-lg border border-teal-500/20">
+        <div className="space-y-6">
             {/* Overall Rating */}
-            <div>
-                <label className="text-xs font-semibold mb-2 block text-white" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
+            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-stitch-green/80 mb-3 block">
                     Overall rating
                 </label>
-                <div className="flex gap-1.5">
+
+
+                <div className="flex gap-2">
                     {[1, 2, 3, 4, 5].map((star) => (
                         <button
                             key={star}
@@ -64,30 +67,34 @@ export function FeedbackWidget({ readingId }: FeedbackWidgetProps) {
                             className="transition-transform hover:scale-110"
                         >
                             <Star
-                                className={`h-6 w-6 ${star <= rating
-                                    ? 'fill-yellow-400 text-yellow-400'
-                                    : 'text-gray-500'
+                                className={`h-8 w-8 ${star <= rating
+                                    ? 'fill-stitch-accent text-stitch-accent'
+                                    : 'text-gray-300'
                                     }`}
+
                             />
+
                         </button>
                     ))}
                 </div>
             </div>
 
             {/* Text Feedback */}
-            <div>
-                <label className="text-xs font-semibold mb-2 block text-white" style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}>
+            <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
+                <label className="text-[10px] font-bold uppercase tracking-[0.2em] text-stitch-green/80 mb-3 block">
                     What would make this more helpful?
                 </label>
+
+
                 <Textarea
                     placeholder="Share your thoughts..."
                     value={feedbackText}
                     onChange={(e) => setFeedbackText(e.target.value)}
                     maxLength={500}
-                    rows={3}
-                    className="resize-none text-xs bg-black/30 border-white/10 text-white placeholder:text-gray-400 focus:border-teal-400/50 focus:ring-teal-400/50"
+                    rows={4}
+                    className="resize-none text-sm bg-gray-50 border-gray-100 text-stitch-dark-green placeholder:text-gray-400 focus:border-stitch-green/30 focus:ring-0 rounded-xl"
                 />
-                <p className="text-[10px] text-gray-400 mt-1">
+                <p className="text-[10px] text-gray-400 mt-2 font-medium">
                     {feedbackText.length}/500 characters
                 </p>
             </div>
@@ -96,12 +103,13 @@ export function FeedbackWidget({ readingId }: FeedbackWidgetProps) {
             <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting || !rating}
-                className="w-full bg-teal-600/80 hover:bg-teal-600 text-white text-xs py-2 border border-teal-500/30 shadow-lg"
-                size="sm"
-                style={{ textShadow: '0 0 8px rgba(255,255,255,0.2)' }}
+                className="w-full bg-stitch-accent hover:bg-stitch-accent/90 disabled:bg-gray-200 disabled:text-gray-400 text-white font-bold py-4 rounded-2xl shadow-lg shadow-stitch-accent/20 transition-all active:scale-[0.98]"
+
             >
-                {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
+                {isSubmitting ? 'Sending...' : 'Submit Feedback'}
             </Button>
+
         </div>
     );
 }
+

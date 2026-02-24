@@ -3,11 +3,11 @@
 /**
  * Welcome Card Component
  * Displays on first visit to guide users through the results interface
+ * Light organic theme with sage-green accents
  */
 
 import { motion } from "framer-motion";
-import { X, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { X, Sparkles, CheckCircle, AlertTriangle, ArrowRight, AlignLeft } from "lucide-react";
 
 interface WelcomeCardProps {
     onDismiss: () => void;
@@ -16,35 +16,30 @@ interface WelcomeCardProps {
 export function WelcomeCard({ onDismiss }: WelcomeCardProps) {
     const sections = [
         {
-            icon: "◈",
+            icon: <Sparkles className="w-4 h-4" />,
             title: "Core Theme",
             description: "Your primary pattern for this period",
-            color: "text-teal-400"
         },
         {
-            icon: "✓",
+            icon: <CheckCircle className="w-4 h-4" />,
             title: "What's Working",
             description: "Strengths and positive energies",
-            color: "text-green-400"
         },
         {
-            icon: "⚠",
+            icon: <AlertTriangle className="w-4 h-4" />,
             title: "Energy Drains",
             description: "Challenges and friction points",
-            color: "text-amber-400"
         },
         {
-            icon: "→",
+            icon: <ArrowRight className="w-4 h-4" />,
             title: "Next 7 Days",
             description: "Focus areas to consider",
-            color: "text-purple-400"
         },
         {
-            icon: "✎",
+            icon: <AlignLeft className="w-4 h-4" />,
             title: "Journal Prompt",
             description: "Personalized reflection questions",
-            color: "text-pink-400"
-        }
+        },
     ];
 
     return (
@@ -53,110 +48,77 @@ export function WelcomeCard({ onDismiss }: WelcomeCardProps) {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="relative flex flex-col bg-[#0a1f1c] border border-teal-500/30 rounded-2xl p-4 md:p-5 md:p-6 lg:p-8 shadow-[0_20px_60px_-12px_rgba(13,148,136,0.3)]"
+            className="relative flex flex-col items-center bg-white border border-[#e4e4e0] rounded-2xl p-5 md:p-8 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.08)]"
+            style={{ fontFamily: "var(--font-inter), var(--font-geist-sans), system-ui, sans-serif" }}
         >
-            {/* Decorative corner accents */}
-            <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-teal-400/40 rounded-tl-2xl pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-teal-400/40 rounded-br-2xl pointer-events-none" />
-
-            {/* Animated background glow */}
-            <div className="absolute inset-0 -z-10 bg-gradient-to-br from-teal-500/10 via-transparent to-purple-500/10 blur-2xl animate-pulse-slow pointer-events-none" />
-
-
             {/* Close button */}
             <button
                 onClick={onDismiss}
-                className="absolute top-3 right-3 z-10 p-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 hover:border-teal-500/30 transition-all duration-300 group"
+                className="absolute top-3 right-3 z-10 p-1.5 rounded-full hover:bg-[#f5f5f2] transition-all duration-200 group"
                 aria-label="Dismiss welcome card"
             >
-                <X className="w-4 h-4 text-gray-400 group-hover:text-white transition-colors" />
+                <X className="w-4 h-4 text-[#aaa] group-hover:text-[#555] transition-colors" />
             </button>
 
-            {/* Header */}
+            {/* Sparkle icon */}
             <div className="mb-3">
-                <div className="flex items-center gap-2 mb-1">
-                    <div className="p-1.5 bg-teal-500/20 rounded-lg border border-teal-500/30">
-                        <Sparkles className="w-4 h-4 text-teal-400" />
-                    </div>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl font-bold text-white tracking-tight">
-                        Welcome to Your Insights
-                    </h3>
+                <div className="w-10 h-10 bg-[#e8f0ea] rounded-xl flex items-center justify-center">
+                    <Sparkles className="w-5 h-5 text-[#4a7c59]" />
                 </div>
-                <p className="text-gray-300 text-xs md:text-sm lg:text-base leading-relaxed ml-11">
-                    Your personalized reading is ready. Here's what you'll discover on your journey:
-                </p>
             </div>
 
+            {/* Header */}
+            <h3
+                className="text-xl md:text-2xl lg:text-3xl font-semibold text-[#1a1a1a] tracking-tight text-center mb-1.5"
+                style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+            >
+                Welcome to Your <span className="italic text-[#4a7c59]">Insights</span>
+            </h3>
+            <p className="text-[#666] text-xs md:text-sm text-center leading-relaxed max-w-sm mb-5">
+                Your personalized reading is ready. Here&apos;s what you&apos;ll discover on your journey:
+            </p>
+
+
             {/* Sections Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 mb-3">
+            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2.5 w-full mb-5">
                 {sections.map((section, index) => (
                     <motion.div
                         key={section.title}
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="group relative bg-black/30 backdrop-blur-sm border border-white/10 rounded-lg p-2.5 hover:border-teal-500/30 hover:bg-black/40 transition-all duration-300 cursor-pointer"
+                        transition={{ delay: index * 0.06 }}
+                        className="bg-[#fafaf8] border border-[#e8e8e4] rounded-xl p-3 hover:border-[#c8d8cc] hover:bg-[#f5f8f5] transition-all duration-200"
                     >
                         <div className="flex items-start gap-2">
-                            <span className={cn("text-lg flex-shrink-0", section.color)}>
+                            <span className="text-[#4a7c59] flex-shrink-0 mt-0.5">
                                 {section.icon}
                             </span>
                             <div className="flex-1 min-w-0">
-                                <h4 className="font-semibold text-white text-xs md:text-sm lg:text-base mb-0.5 group-hover:text-teal-300 transition-colors">
+                                <h4 className="font-semibold text-[#1a1a1a] text-xs md:text-sm mb-0.5">
                                     {section.title}
                                 </h4>
-                                <p className="text-[10px] md:text-xs lg:text-sm text-gray-400 leading-snug">
+                                <p className="text-[10px] md:text-xs text-[#666] leading-snug">
                                     {section.description}
                                 </p>
+
                             </div>
                         </div>
-                        {/* Hover glow effect */}
-                        <div className="absolute inset-0 -z-10 rounded-lg bg-gradient-to-br from-teal-500/0 to-purple-500/0 group-hover:from-teal-500/5 group-hover:to-purple-500/5 transition-all duration-300" />
                     </motion.div>
                 ))}
             </div>
-
-
 
             {/* CTA Button */}
             <motion.button
                 onClick={onDismiss}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full px-6 py-3 bg-gradient-to-r from-teal-500/20 to-purple-500/20 hover:from-teal-500/30 hover:to-purple-500/30 border border-teal-500/40 hover:border-teal-400/60 rounded-xl font-semibold text-white text-sm md:text-base lg:text-lg tracking-wide uppercase transition-all duration-300 shadow-[0_0_20px_-5px_rgba(13,148,136,0.3)] hover:shadow-[0_0_30px_-5px_rgba(13,148,136,0.5)] group"
+                className="px-8 py-3 bg-[#3d6b4a] hover:bg-[#2f5a3c] text-white rounded-full font-medium text-sm transition-all duration-200 shadow-sm hover:shadow-md group"
             >
                 <span className="flex items-center justify-center gap-2">
                     Start Exploring
-                    <svg
-                        className="w-4 h-4 group-hover:translate-x-1 transition-transform"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                    >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                    </svg>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
                 </span>
             </motion.button>
-
-
-            {/* Decorative floating elements */}
-            <div className="absolute -top-8 -right-8 w-24 h-24 bg-teal-500/10 rounded-full blur-3xl animate-float pointer-events-none" />
-            <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-purple-500/10 rounded-full blur-3xl animate-drift pointer-events-none" />
-
-
-            <style jsx>{`
-                @keyframes float {
-                    0%, 100% { transform: translateY(0) rotate(0deg); }
-                    50% { transform: translateY(-10px) rotate(5deg); }
-                }
-                @keyframes drift {
-                    0%, 100% { transform: translate(0, 0); }
-                    50% { transform: translate(15px, -15px); }
-                }
-                .animate-float { animation: float 8s ease-in-out infinite; }
-                .animate-drift { animation: drift 10s ease-in-out infinite; }
-                .animate-pulse-slow { animation: pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
-            `}</style>
         </motion.div>
     );
 }
