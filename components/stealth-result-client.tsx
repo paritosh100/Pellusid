@@ -7,7 +7,9 @@
  */
 
 import { useState } from "react";
+import Image from "next/image";
 import { ShareButton } from "@/components/share-button";
+
 import { JournalPrompt } from "@/components/journal-prompt";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
@@ -196,12 +198,20 @@ export function StealthResultClient({ reading, inputs, readingId }: StealthResul
             {/* Left Sidebar - Navigation */}
             <aside className="hidden lg:flex lg:flex-col w-64 bg-black/70 backdrop-blur-2xl border-r border-white/10 flex-shrink-0">
                 <div className="p-5 border-b border-white/10 flex-shrink-0">
-                    <a href="/" className="group inline-block">
-                        <span className="text-2xl font-bold tracking-tighter bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent group-hover:to-teal-100 transition-all">
-                            PELLUCID
+                    <a href="/" className="group inline-flex items-center gap-2">
+                        <Image
+                            src="/Abstract_intuitive.png"
+                            alt="InsightBridge Logo"
+                            width={32}
+                            height={32}
+                            className="rounded-lg object-contain brightness-110 saturate-150"
+                        />
+                        <span className="text-2xl font-bold tracking-tighter bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent group-hover:to-teal-100 transition-all uppercase">
+                            InsightBridge
                         </span>
                         <span className="ml-1.5 text-xs text-gray-300 tracking-[0.2em]">REFLECT</span>
                     </a>
+
                 </div>
 
                 <nav className="flex-1 p-4 space-y-2 min-h-0">
@@ -238,11 +248,19 @@ export function StealthResultClient({ reading, inputs, readingId }: StealthResul
                     <div className="flex items-center justify-between">
                         <a href="/" className="group inline-flex items-center gap-2">
                             <ChevronLeft className="w-5 h-5 text-white/60 group-hover:text-teal-300 transition-colors" />
-                            <span className="text-lg font-bold tracking-tighter bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent">
-                                PELLUCID
+                            <Image
+                                src="/Abstract_intuitive.png"
+                                alt="InsightBridge Logo"
+                                width={24}
+                                height={24}
+                                className="rounded-md object-contain brightness-110"
+                            />
+                            <span className="text-lg font-bold tracking-tighter bg-gradient-to-r from-teal-200 to-emerald-400 bg-clip-text text-transparent uppercase">
+                                InsightBridge
                             </span>
                             <span className="ml-0.5 text-[10px] text-gray-300 tracking-[0.2em]">REFLECT</span>
                         </a>
+
                         <ShareButton />
                     </div>
                 </div>
@@ -260,7 +278,8 @@ export function StealthResultClient({ reading, inputs, readingId }: StealthResul
                     </div>
 
                     {/* Dynamic Content */}
-                    <div className="sm:bg-[#0f2f2a]/40 sm:backdrop-blur-md sm:border sm:border-teal-500/20 sm:rounded-xl lg:p-8 mb-2 sm:mb-4 p-4 sm:p-5">
+                    <div className="sm:bg-[#0f2f2a]/40 sm:backdrop-blur-md sm:border sm:border-teal-500/20 sm:rounded-xl p-6 sm:p-8 lg:p-12 mb-4 sm:mb-6">
+
                         <AnimatePresence mode="wait">
                             {renderContent()}
                         </AnimatePresence>

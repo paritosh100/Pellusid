@@ -44,41 +44,52 @@
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+  --color-stitch-green: #4a7c59;
+  --color-stitch-dark-green: #1a1a1a;
+  --color-stitch-light-green: #e8f0ea;
+  --color-stitch-accent: #3d6b4a;
+  --font-playfair: var(--font-playfair);
+  --font-inter: var(--font-inter);
 }
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.13 0.028 261.692);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.13 0.028 261.692);
+  --background: #fafaf8;
+  --foreground: #1a1a1a;
+  --card: #ffffff;
+  --card-foreground: #1a1a1a;
+  --stitch-green: #4a7c59;
+  --stitch-dark-green: #1a1a1a;
+  --stitch-light-green: #e8f0ea;
+  --stitch-accent: #3d6b4a;
+  /* ... rest of existing vars ... */
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.13 0.028 261.692);
-  --primary: oklch(0.21 0.034 264.665);
-  --primary-foreground: oklch(0.985 0.002 247.839);
-  --secondary: oklch(0.967 0.003 264.542);
-  --secondary-foreground: oklch(0.21 0.034 264.665);
-  --muted: oklch(0.967 0.003 264.542);
-  --muted-foreground: oklch(0.551 0.027 264.364);
-  --accent: oklch(0.967 0.003 264.542);
-  --accent-foreground: oklch(0.21 0.034 264.665);
+  --primary: #4a6741;
+  --primary-foreground: #ffffff;
+  --secondary: #eef1ed;
+  --secondary-foreground: #1a2f2a;
+  --muted: #f3f4f2;
+  --muted-foreground: #6b7280;
+  --accent: #eef1ed;
+  --accent-foreground: #1a2f2a;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.928 0.006 264.531);
-  --input: oklch(0.928 0.006 264.531);
-  --ring: oklch(0.707 0.022 261.325);
+  --border: #e5e7eb;
+  --input: #e5e7eb;
+  --ring: #4a6741;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0.002 247.839);
-  --sidebar-foreground: oklch(0.13 0.028 261.692);
-  --sidebar-primary: oklch(0.21 0.034 264.665);
-  --sidebar-primary-foreground: oklch(0.985 0.002 247.839);
-  --sidebar-accent: oklch(0.967 0.003 264.542);
-  --sidebar-accent-foreground: oklch(0.21 0.034 264.665);
-  --sidebar-border: oklch(0.928 0.006 264.531);
-  --sidebar-ring: oklch(0.707 0.022 261.325);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #1a2f2a;
+  --sidebar-primary: #4a6741;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f3f4e9;
+  --sidebar-accent-foreground: #4a6741;
+  --sidebar-border: #e5e7eb;
+  --sidebar-ring: #4a6741;
 }
 
 .dark {
@@ -122,10 +133,11 @@
 
   html,
   body {
-    background-color: #0a0a0c;
+    background-color: var(--background);
     @apply text-foreground;
   }
 }
+
 
 /* Custom Animations for Pellucid Insights */
 @keyframes float {
