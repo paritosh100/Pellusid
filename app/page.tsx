@@ -69,11 +69,16 @@ export default function HomePage() {
     supabase.auth.getUser().then(({ data: { user } }) => {
       setUser(user);
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null);
+      if (event === 'SIGNED_IN') {
+        // Subtle delay to ensure DOM is ready and hero animation has started
+        setTimeout(() => smoothScrollTo('journal-form'), 500);
+      }
     });
     return () => subscription.unsubscribe();
   }, []);
+
 
   // Pre-fill form with user data from latest reading
   useEffect(() => {
@@ -174,7 +179,8 @@ export default function HomePage() {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="relative z-50 w-full border-b border-[#e8e8e4]"
       >
-        <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
+        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 md:px-10 py-4 flex items-center justify-between">
+
 
           {/* Logo */}
           <Link href="/" className="flex items-center gap-2 group">
@@ -207,22 +213,25 @@ export default function HomePage() {
           </nav>
 
           {/* Auth Buttons */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
+
             {user ? (
               <UserMenu user={user} />
             ) : (
               <>
                 <Link
                   href="/login"
-                  className="text-sm text-[#444] hover:text-[#1a1a1a] transition-colors duration-200 font-medium hidden sm:block"
+                  className="text-sm text-[#444] hover:text-[#1a1a1a] transition-colors duration-200 font-medium whitespace-nowrap"
                 >
                   Log In
                 </Link>
+
                 <Link
                   href="/signup"
-                  className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#3d6b4a] text-white text-sm font-medium hover:bg-[#2f5a3c] transition-colors duration-200 shadow-sm"
+                  className="inline-flex items-center gap-1.5 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-[#3d6b4a] text-white text-xs sm:text-sm font-medium hover:bg-[#2f5a3c] transition-colors duration-200 shadow-sm whitespace-nowrap"
                 >
                   Get Started
+
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                     <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
                   </svg>
