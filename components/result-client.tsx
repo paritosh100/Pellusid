@@ -13,8 +13,8 @@ import { RegenerateButton } from "@/components/regenerate-button";
 import { JournalPrompt } from "@/components/journal-prompt";
 import { FeedbackWidget } from "@/components/feedback-widget";
 import { SectionFeedback } from "@/components/section-feedback";
-import { AppNameFeedback } from "@/components/app-name-feedback";
 import { WelcomeCard } from "@/components/welcome-card";
+
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { MessageSquare, X, ChevronLeft, ChevronRight, LayoutGrid, CheckCircle2, AlertTriangle, ArrowRight, PenLine } from "lucide-react";
@@ -525,7 +525,8 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
                             onClick={() => setIsRightPanelOpen(false)}
-                            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 lg:hidden"
+                            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 lg:hidden"
+
                         />
                         {/* Panel */}
                         <motion.div
@@ -533,25 +534,25 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                             animate={{ x: 0 }}
                             exit={{ x: "100%" }}
                             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                            className="fixed top-0 right-0 bottom-0 w-[85vw] sm:w-96 bg-[#0a1f1c] border-l border-white/10 z-[51] shadow-2xl lg:hidden flex flex-col"
+                            className="fixed top-0 right-0 bottom-0 w-[85vw] sm:w-96 bg-white border-l border-gray-100 z-[51] shadow-2xl lg:hidden flex flex-col"
                         >
-                            <div className="p-4 border-b border-white/10 flex items-center justify-between bg-black/20">
-                                <h3 className="font-bold text-white flex items-center gap-2">
-                                    <MessageSquare className="w-4 h-4 text-teal-400" />
+                            <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                                <h3 className="font-bold text-[#1a1a1a] flex items-center gap-2">
+                                    <MessageSquare className="w-4 h-4 text-stitch-accent" />
                                     Feedback
                                 </h3>
                                 <button
                                     onClick={() => setIsRightPanelOpen(false)}
-                                    className="p-1.5 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white"
+                                    className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400 hover:text-[#1a1a1a]"
                                 >
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
-                            <div className="p-4 space-y-4 overflow-y-auto flex-1">
-                                <AppNameFeedback />
+                            <div className="p-6 space-y-6 overflow-y-auto flex-1 bg-white">
                                 <FeedbackWidget readingId={readingId} />
                             </div>
                         </motion.div>
+
                     </>
                 )}
             </AnimatePresence>
