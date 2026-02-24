@@ -35,11 +35,12 @@ export default function SignupPage() {
 
         try {
             const supabase = createClient();
+            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
             const { error } = await supabase.auth.signUp({
                 email,
                 password,
                 options: {
-                    emailRedirectTo: `${window.location.origin}/auth/callback`,
+                    emailRedirectTo: `${siteUrl}/auth/callback`,
                 },
             });
 
@@ -59,10 +60,11 @@ export default function SignupPage() {
     const handleGoogleLogin = async () => {
         try {
             const supabase = createClient();
+            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
             await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${window.location.origin}/auth/callback`,
+                    redirectTo: `${siteUrl}/auth/callback`,
                 },
             });
         } catch (error) {
