@@ -191,7 +191,7 @@ export default function HomePage() {
               height={28}
               className="rounded-md object-contain"
             />
-            <span className="text-lg font-bold tracking-tight text-[#1a1a1a]"
+            <span className="text-lg  tracking-tight text-[#1a1a1a]"
               style={{ fontFamily: "var(--font-inter), sans-serif" }}
             >
               INSIGHTBRIDGE
