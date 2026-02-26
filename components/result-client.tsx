@@ -84,6 +84,52 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
     };
 
     const renderContent = () => {
+        const NavigationButtons = () => (
+            <div className="flex items-center justify-between mt-10 pt-6 border-t border-stitch-light-green/30">
+                <div className="flex gap-1.5 items-center">
+                    {sections.map((_, i) => (
+                        <div
+                            key={i}
+                            className={cn(
+                                "h-1 rounded-full transition-all duration-300",
+                                i === currentSectionIndex ? "w-4 bg-stitch-accent" : "w-1 bg-stitch-light-green"
+                            )}
+                        />
+                    ))}
+                </div>
+
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={goToPreviousSection}
+                        disabled={isFirstSection}
+                        className={cn(
+                            "flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 font-bold text-[10px] tracking-widest uppercase",
+                            isFirstSection
+                                ? "opacity-0 pointer-events-none"
+                                : "text-[#888] hover:text-stitch-accent hover:bg-stitch-light-green/50"
+                        )}
+                    >
+                        <ChevronLeft className="w-4 h-4" />
+                        Previous
+                    </button>
+
+                    <button
+                        onClick={goToNextSection}
+                        disabled={isLastSection}
+                        className={cn(
+                            "flex items-center gap-2 px-5 py-2.5 rounded-xl transition-all duration-300 font-bold text-[10px] tracking-widest uppercase shadow-sm",
+                            isLastSection
+                                ? "opacity-0 pointer-events-none"
+                                : "bg-stitch-accent text-white hover:bg-stitch-green hover:shadow-lg hover:shadow-stitch-accent/20 active:scale-95"
+                        )}
+                    >
+                        Next
+                        <ChevronRight className="w-4 h-4" />
+                    </button>
+                </div>
+            </div>
+        );
+
         switch (activeSection) {
             case 'coreTheme':
                 return (
@@ -107,6 +153,8 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 {reading.coreTheme}
                             </p>
                         </div>
+
+                        <NavigationButtons />
 
                         {/* Mobile feedback pills - 2x2 grid below content */}
                         <div className="sm:hidden mt-6 pt-4 border-t border-stitch-light-green flex-shrink-0">
@@ -153,6 +201,9 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 ))}
                             </ul>
                         </div>
+
+                        <NavigationButtons />
+
                         {/* Mobile feedback pills */}
                         <div className="sm:hidden mt-6 pt-4 border-t border-stitch-light-green flex-shrink-0">
                             <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wider">How does this resonate?</p>
@@ -197,6 +248,9 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 ))}
                             </ul>
                         </div>
+
+                        <NavigationButtons />
+
                         {/* Mobile feedback pills */}
                         <div className="sm:hidden mt-6 pt-4 border-t border-stitch-light-green flex-shrink-0">
                             <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wider">How does this resonate?</p>
@@ -242,6 +296,9 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                                 ))}
                             </ul>
                         </div>
+
+                        <NavigationButtons />
+
                         {/* Mobile feedback pills */}
                         <div className="sm:hidden mt-6 pt-4 border-t border-stitch-light-green flex-shrink-0">
                             <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wider">How does this resonate?</p>
@@ -259,17 +316,20 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
                         transition={{ duration: 0.3 }}
-                        className="pr-2"
+                        className="pr-2 flex flex-col h-full"
                     >
-                        <JournalPrompt
-                            journalPrompt={reading.journalPrompt}
-                            userInputs={inputs}
-                            readingId={readingId}
-                            savedAnswer={journalAnswer}
-                            savedQuestion={journalQuestion}
-                            onAnswerGenerated={handleAnswerGenerated}
-                            onOpenFeedback={() => setIsRightPanelOpen(true)}
-                        />
+                        <div className="flex-1">
+                            <JournalPrompt
+                                journalPrompt={reading.journalPrompt}
+                                userInputs={inputs}
+                                readingId={readingId}
+                                savedAnswer={journalAnswer}
+                                savedQuestion={journalQuestion}
+                                onAnswerGenerated={handleAnswerGenerated}
+                                onOpenFeedback={() => setIsRightPanelOpen(true)}
+                            />
+                        </div>
+                        <NavigationButtons />
                     </motion.div>
                 );
         }
@@ -439,66 +499,6 @@ export function ResultClient({ reading, inputs, readingId }: ResultClientProps) 
                 </div>
             </main>
 
-
-            {/* Mobile Navigation Bar - Fixed at bottom */}
-            <div className="lg:hidden fixed bottom-0 left-0 right-0 h-16 bg-white/80 backdrop-blur-xl border-t border-gray-100 flex items-center justify-between px-6 z-40">
-                {/* Left Arrow */}
-                <motion.button
-                    onClick={goToPreviousSection}
-                    disabled={isFirstSection}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: isFirstSection ? 0.3 : 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className={cn(
-                        "w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300",
-                        "bg-gray-50 border border-gray-200",
-                        !isFirstSection && "hover:bg-stitch-light-green hover:border-stitch-green/30 active:scale-95",
-                        isFirstSection && "opacity-30 cursor-not-allowed"
-                    )}
-                    aria-label="Previous section"
-                >
-                    <ChevronLeft className={cn(
-                        "w-6 h-6 transition-colors",
-                        isFirstSection ? "text-gray-300" : "text-stitch-green"
-                    )} />
-                </motion.button>
-
-                {/* Section Indicator */}
-                <div className="flex items-center gap-1.5">
-                    {sections.map((section, index) => (
-                        <div
-                            key={section.id}
-                            className={cn(
-                                "h-1.5 rounded-full transition-all duration-300",
-                                activeSection === section.id
-                                    ? "w-8 bg-stitch-green"
-                                    : "w-1.5 bg-gray-200"
-                            )}
-                        />
-                    ))}
-                </div>
-
-                {/* Right Arrow */}
-                <motion.button
-                    onClick={goToNextSection}
-                    disabled={isLastSection}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: isLastSection ? 0.3 : 1, scale: 1 }}
-                    transition={{ duration: 0.3 }}
-                    className={cn(
-                        "w-11 h-11 rounded-full flex items-center justify-center transition-all duration-300",
-                        "bg-gray-50 border border-gray-200",
-                        !isLastSection && "hover:bg-stitch-light-green hover:border-stitch-green/30 active:scale-95",
-                        isLastSection && "opacity-30 cursor-not-allowed"
-                    )}
-                    aria-label="Next section"
-                >
-                    <ChevronRight className={cn(
-                        "w-6 h-6 transition-colors",
-                        isLastSection ? "text-gray-300" : "text-stitch-green"
-                    )} />
-                </motion.button>
-            </div>
 
 
             {/* Right Sidebar - Compact, no scroll */}
