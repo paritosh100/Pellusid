@@ -7,7 +7,7 @@
  */
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,8 @@ import { cn } from "@/lib/utils";
 
 export default function LoginPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get("redirect") || "/";
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +38,7 @@ export default function LoginPage() {
                 throw error;
             }
 
-            router.push("/");
+            router.push(redirectTo);
             router.refresh();
         } catch (err) {
             console.error("Login error:", err);
@@ -49,11 +51,11 @@ export default function LoginPage() {
     const handleGoogleLogin = async () => {
         try {
             const supabase = createClient();
-            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+            const siteUrl = window.location.origin;
             await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${siteUrl}/auth/callback`,
+                    redirectTo: `${siteUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
                 },
             });
         } catch (error) {
@@ -201,7 +203,7 @@ export default function LoginPage() {
                         <div className="text-center space-y-2.5 pt-2">
                             <p className="text-sm text-[#888]">
                                 Don&apos;t have an account?{" "}
-                                <Link href="/signup" className="text-[#4a7c59] hover:text-[#3d6b4a] transition-colors font-medium">
+                                <Link href={`/signup${redirectTo !== "/" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`} className="text-[#4a7c59] hover:text-[#3d6b4a] transition-colors font-medium">
                                     Sign up
                                 </Link>
                             </p>

@@ -513,6 +513,37 @@ export default function HomePage() {
         </motion.div>
       </section>
 
+      {/* ===== BEHAVIORAL PATTERNS TEASER (below form) ===== */}
+      {/* <section id="behavioral-patterns-cta" className="relative z-10 max-w-[640px] mx-auto px-6 md:px-10 -mt-10 mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          <Link
+            href="/behavioral-patterns"
+            className="group flex items-center gap-4 px-5 py-4 rounded-xl bg-white/90 border border-[#d0ddd3] hover:border-[#4a7c59]/40 hover:shadow-md transition-all duration-300 backdrop-blur-sm"
+          >
+            <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#e8f0ea] flex items-center justify-center relative">
+              <svg className="w-5 h-5 text-[#4a7c59]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+              </svg>
+              <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#4a7c59] animate-pulse-slow border-2 border-white" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-0.5">
+                <p className="text-sm font-semibold text-[#1a1a1a] tracking-tight">Behavioral Patterns</p>
+                <span className="text-[9px] font-bold tracking-[0.1em] uppercase px-1.5 py-0.5 rounded bg-[#4a7c59] text-white">NEW</span>
+              </div>
+              <p className="text-xs text-[#888] leading-relaxed">Discover your consistency, decision style &amp; goal clarity with Bridge — your behavioral navigator.</p>
+            </div>
+            <svg className="w-4 h-4 text-[#bbb] group-hover:text-[#4a7c59] group-hover:translate-x-0.5 transition-all duration-200 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </Link>
+        </motion.div>
+      </section> */}
 
       {/* ===== HOW IT WORKS ===== */}
       <section id="how-it-works" className="relative z-10 max-w-[1200px] mx-auto px-6 md:px-10 pb-20 md:pb-28">
@@ -668,6 +699,47 @@ export default function HomePage() {
       </section>
 
 
+      {/* ===== BEHAVIORAL PATTERNS CTA ===== */}
+      <section id="bp-explore" className="relative z-10 max-w-[800px] mx-auto px-6 md:px-10 pb-20 md:pb-28">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7 }}
+          className="relative overflow-hidden bg-gradient-to-br from-[#e8f0ea] via-white to-[#f0ede6] border border-[#d0ddd3] rounded-2xl p-8 md:p-12 text-center shadow-[0_8px_40px_-12px_rgba(0,0,0,0.06)]"
+        >
+          {/* Decorative element */}
+          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-bl from-[#4a7c59]/10 to-transparent rounded-bl-full" />
+
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/80 border border-[#d0ddd3] mb-5">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#4a7c59]" />
+            <span className="text-[10px] font-semibold tracking-[0.15em] uppercase text-[#3d6b4a]">
+              New Add-On
+            </span>
+          </div>
+
+          <h2
+            className="text-2xl md:text-3xl tracking-tight mb-3"
+            style={{ fontFamily: "var(--font-playfair), Georgia, serif" }}
+          >
+            Behavioral <span className="italic text-[#4a7c59]">Patterns</span>
+          </h2>
+          <p className="text-sm text-[#666] max-w-md mx-auto leading-relaxed mb-7">
+            Discover your consistency patterns, decision style, and goal clarity. Get a personalized report and chat with Bridge — your behavioral patterns navigator.
+          </p>
+
+          <Link
+            href="/behavioral-patterns"
+            className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-[#3d6b4a] text-white text-sm font-medium hover:bg-[#2f5a3c] transition-all duration-200 shadow-md hover:shadow-lg"
+          >
+            Explore Your Patterns
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+            </svg>
+          </Link>
+        </motion.div>
+      </section>
+
       {/* ===== FOOTER ===== */}
       <footer className="relative z-10 border-t border-[#e8e8e4]">
         <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-6 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -762,6 +834,112 @@ export default function HomePage() {
         )}
       </AnimatePresence>
 
+      {/* ===== FLOATING BEHAVIORAL PATTERNS TOAST ===== */}
+      <FloatingFeatureToast />
+
     </div>
   );
 }
+
+/** Floating toast that promotes the Behavioral Patterns add-on — collapsible */
+function FloatingFeatureToast() {
+  const [visible, setVisible] = useState(false);
+  const [minimized, setMinimized] = useState(false);
+
+  useEffect(() => {
+    const wasMinimized = sessionStorage.getItem("bp_toast_minimized");
+    if (wasMinimized) setMinimized(true);
+    const timer = setTimeout(() => setVisible(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  function toggleMinimize() {
+    setMinimized((prev) => {
+      const next = !prev;
+      if (next) sessionStorage.setItem("bp_toast_minimized", "1");
+      else sessionStorage.removeItem("bp_toast_minimized");
+      return next;
+    });
+  }
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed bottom-6 right-6 z-[100]">
+      <AnimatePresence mode="wait">
+        {minimized ? (
+          /* ---- Minimized: small circular button ---- */
+          <motion.button
+            key="mini"
+            initial={{ opacity: 0, scale: 0.5 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.5 }}
+            transition={{ type: "spring", damping: 20, stiffness: 300 }}
+            onClick={toggleMinimize}
+            className="w-12 h-12 rounded-full bg-white border border-[#d0ddd3] shadow-lg flex items-center justify-center relative hover:shadow-xl hover:scale-105 transition-all duration-200"
+            aria-label="Expand Behavioral Patterns notification"
+          >
+            <svg className="w-5 h-5 text-[#4a7c59]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+            </svg>
+            <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-[#4a7c59] animate-pulse-slow border-2 border-white" />
+          </motion.button>
+        ) : (
+          /* ---- Expanded: full toast ---- */
+          <motion.div
+            key="expanded"
+            initial={{ opacity: 0, y: 80, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
+            className="max-w-sm w-80"
+          >
+            <div className="relative bg-white border border-[#d0ddd3] rounded-2xl shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] p-5 pr-10">
+              {/* Minimize button */}
+              <button
+                onClick={toggleMinimize}
+                className="absolute top-3 right-3 w-6 h-6 rounded-full flex items-center justify-center text-[#bbb] hover:text-[#666] hover:bg-[#f0f0ec] transition-all duration-200"
+                aria-label="Minimize"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
+                </svg>
+              </button>
+
+              <div className="flex items-start gap-3.5">
+                <div className="flex-shrink-0 w-10 h-10 rounded-full bg-[#e8f0ea] flex items-center justify-center relative mt-0.5">
+                  <svg className="w-5 h-5 text-[#4a7c59]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z" />
+                  </svg>
+                  <span className="absolute -top-0.5 -right-0.5 w-3 h-3 rounded-full bg-[#4a7c59] animate-pulse-slow border-2 border-white" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <p className="text-sm font-semibold text-[#1a1a1a] tracking-tight">Behavioral Patterns</p>
+                    <span className="text-[9px] font-bold tracking-[0.1em] uppercase px-1.5 py-0.5 rounded bg-[#4a7c59] text-white leading-none">NEW</span>
+                  </div>
+                  <p className="text-xs text-[#888] leading-relaxed mb-3">
+                    Discover your consistency, decision style &amp; goal clarity with Bridge — your behavioral navigator.
+                  </p>
+                  <button
+                    onClick={() => {
+                      document.getElementById("bp-explore")?.scrollIntoView({ behavior: "smooth", block: "center" });
+                      toggleMinimize();
+                    }}
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#4a7c59] hover:text-[#2f5a3c] transition-colors duration-200"
+                  >
+                    Try it now
+                    <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
+

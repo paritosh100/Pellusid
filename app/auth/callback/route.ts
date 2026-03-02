@@ -9,8 +9,9 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET(request: NextRequest) {
     const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get('code')
-    // Prefer NEXT_PUBLIC_SITE_URL, fall back to request origin
-    const origin = process.env.NEXT_PUBLIC_SITE_URL || requestUrl.origin
+    const redirectPath = requestUrl.searchParams.get('redirect')
+    // Always use the request origin so it stays on localhost in dev
+    const origin = requestUrl.origin
 
     if (code) {
         const supabase = await createClient()
@@ -21,6 +22,7 @@ export async function GET(request: NextRequest) {
         }
     }
 
-    // Redirect to home page without the code parameter
-    return NextResponse.redirect(origin)
+    // Redirect to the intended page, or home page by default
+    const destination = redirectPath ? `${origin}${redirectPath}` : origin
+    return NextResponse.redirect(destination)
 }
