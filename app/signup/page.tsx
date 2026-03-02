@@ -6,15 +6,35 @@
  * Styled to match the light organic InsightBridge aesthetic
  */
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 export default function SignupPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-[#fafaf8]">
+                <div className="flex items-center gap-2 text-[#888] text-sm">
+                    <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Loading...
+                </div>
+            </div>
+        }>
+            <SignupPageInner />
+        </Suspense>
+    );
+}
+
+function SignupPageInner() {
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const redirectTo = searchParams.get("redirect") || "/";
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
@@ -35,7 +55,7 @@ export default function SignupPage() {
 
         try {
             const supabase = createClient();
-            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+            const siteUrl = window.location.origin;
             const { error } = await supabase.auth.signUp({
                 email,
                 password,
@@ -60,11 +80,11 @@ export default function SignupPage() {
     const handleGoogleLogin = async () => {
         try {
             const supabase = createClient();
-            const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+            const siteUrl = window.location.origin;
             await supabase.auth.signInWithOAuth({
                 provider: 'google',
                 options: {
-                    redirectTo: `${siteUrl}/auth/callback`,
+                    redirectTo: `${siteUrl}/auth/callback?redirect=${encodeURIComponent(redirectTo)}`,
                 },
             });
         } catch (error) {
@@ -276,7 +296,7 @@ export default function SignupPage() {
                         <div className="text-center space-y-2 pt-1">
                             <p className="text-sm text-[#888]">
                                 Already have an account?{" "}
-                                <Link href="/login" className="text-[#4a7c59] hover:text-[#3d6b4a] transition-colors font-medium">
+                                <Link href={`/login${redirectTo !== "/" ? `?redirect=${encodeURIComponent(redirectTo)}` : ""}`} className="text-[#4a7c59] hover:text-[#3d6b4a] transition-colors font-medium">
                                     Sign in
                                 </Link>
                             </p>
