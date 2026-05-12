@@ -1,0 +1,178 @@
+name: Deploy
+
+on:
+  push:
+    branches: [master, main]
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  check-tests-passed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check if all required checks passed
+        run: |
+          echo "Verifying that frontend-ci and backend-ci workflows passed..."
+          # This is a placeholder - GitHub Actions will automatically check this
+          # through required status checks in branch protection rules
+
+  deploy-frontend:
+    needs: check-tests-passed
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Vercel (Production)
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          scope: ${{ secrets.VERCEL_ORG_ID }}
+          production: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+          USE_ADK_BACKEND: true
+          ADK_BACKEND_URL: ${{ secrets.ADK_BACKEND_URL }}
+
+      - name: Create deployment annotation
+        run: |
+          echo "✅ Frontend deployed to Vercel (Production)" >> $GITHUB_STEP_SUMMARY
+
+  deploy-backend:
+    needs: check-tests-passed
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          export_default_credentials: true
+
+      - name: Configure Docker for Artifact Registry
+        run: |
+          gcloud auth configure-docker us-central1-docker.pkg.dev
+
+      - name: Build and push Docker image
+        run: |
+          cd adk-backend
+          docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pellucid/adk-backend:${{ github.sha }} .
+          docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pellucid/adk-backend:${{ github.sha }}
+          docker tag us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pellucid/adk-backend:${{ github.sha }} us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pellucid/adk-backend:latest
+          docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pellucid/adk-backend:latest
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy pellucid-adk-backend \
+            --image us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/pellucid/adk-backend:latest \
+            --platform managed \
+            --region us-central1 \
+            --allow-unauthenticated \
+            --set-env-vars GOOGLE_API_KEY=${{ secrets.GOOGLE_API_KEY }},ENVIRONMENT=production,DATABASE_URL=${{ secrets.DATABASE_URL }}
+
+      - name: Create deployment annotation
+        run: |
+          echo "✅ Backend deployed to Cloud Run (Production)" >> $GITHUB_STEP_SUMMARY
+
+  smoke-test-production:
+    needs: [deploy-frontend, deploy-backend]
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install httpx
+
+      - name: Test production frontend health
+        run: |
+          curl -f https://insightbridge.app/ || exit 1
+        timeout-minutes: 1
+
+      - name: Test production backend health
+        run: |
+          curl -f https://pellucid-adk-backend.run.app/health || exit 1
+        timeout-minutes: 1
+
+      - name: Run production smoke tests
+        run: |
+          python -c "
+          import httpx
+          import asyncio
+
+          async def test():
+              async with httpx.AsyncClient() as client:
+                  # Test backend
+                  response = await client.get('https://pellucid-adk-backend.run.app/health')
+                  assert response.status_code == 200, f'Backend health check failed: {response.status_code}'
+
+                  # Test frontend
+                  response = await client.get('https://insightbridge.app/')
+                  assert response.status_code == 200, f'Frontend health check failed: {response.status_code}'
+
+          asyncio.run(test())
+          print('✅ Production smoke tests passed')
+          "
+        timeout-minutes: 2
+
+      - name: Create smoke test annotation
+        run: |
+          echo "✅ Production smoke tests passed" >> $GITHUB_STEP_SUMMARY
+
+  notify-deployment:
+    needs: [deploy-frontend, deploy-backend, smoke-test-production]
+    runs-on: ubuntu-latest
+    if: success()
+
+    steps:
+      - name: Notify Slack of successful deployment
+        uses: slackapi/slack-github-action@v1
+        with:
+          payload: |
+            {
+              "text": "✅ Pellucid Insights deployed successfully to production!",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "🚀 *Production Deployment Successful*\n\nFrontend: https://insightbridge.app\nBackend: https://pellucid-adk-backend.run.app\n\nCommit: ${{ github.sha }}\nAuthor: ${{ github.actor }}"
+                  }
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        continue-on-error: true

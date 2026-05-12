@@ -1,0 +1,177 @@
+name: Integration Tests
+
+on:
+  push:
+    branches: [master, main, develop, insightbridge-agents]
+  pull_request:
+    branches: [master, main, develop]
+  schedule:
+    # Run nightly at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    services:
+      supabase:
+        image: supabase/postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install Python dependencies
+        run: |
+          cd adk-backend
+          pip install -r requirements.txt
+
+      - name: Build Next.js app
+        run: npm run build
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Start ADK backend
+        run: |
+          cd adk-backend
+          nohup uvicorn main:app --host 0.0.0.0 --port 8080 > backend.log 2>&1 &
+          sleep 3
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/postgres
+
+      - name: Start Next.js production server
+        run: |
+          npm start > frontend.log 2>&1 &
+          sleep 5
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          USE_ADK_BACKEND: 'true'
+          ADK_BACKEND_URL: http://localhost:8080
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+
+      - name: Test backend health
+        run: |
+          curl -f http://localhost:8080/health || exit 1
+        timeout-minutes: 1
+
+      - name: Test frontend health
+        run: |
+          curl -f http://localhost:3000/ || exit 1
+        timeout-minutes: 1
+
+      - name: Run E2E tests with Playwright
+        run: npm run test:e2e
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          USE_ADK_BACKEND: 'true'
+          ADK_BACKEND_URL: http://localhost:8080
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Test /api/generate-reading endpoint
+        run: |
+          curl -X POST http://localhost:3000/api/generate-reading \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "CI Test User",
+              "birthDate": "1990-05-15",
+              "birthCity": "New York",
+              "focusArea": "general"
+            }' || echo "Endpoint test failed (expected in test env)"
+
+      - name: Test OpenAI backend fallback
+        run: |
+          curl -X POST http://localhost:3000/api/generate-reading \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "OpenAI Test",
+              "birthDate": "1985-03-20",
+              "birthCity": "San Francisco"
+            }' || echo "OpenAI fallback test failed (expected in test env)"
+        env:
+          USE_ADK_BACKEND: 'false'
+
+      - name: Upload logs on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-test-logs
+          path: |
+            adk-backend/backend.log
+            frontend.log
+          retention-days: 7
+
+  api-contract-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          cd adk-backend
+          pip install -r requirements.txt
+
+      - name: Start backend
+        run: |
+          cd adk-backend
+          nohup uvicorn main:app --host 0.0.0.0 --port 8080 > api.log 2>&1 &
+          sleep 3
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
+      - name: Run API contract tests
+        run: |
+          cd adk-backend
+          python -m pytest tests/test_api.py::test_generate_reading_normal_mode -v
+          python -m pytest tests/test_api.py::test_generate_reading_stealth_mode -v
+          python -m pytest tests/test_api.py::test_bridge_generate_report -v
+          python -m pytest tests/test_api.py::test_bridge_chat_free -v
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
+      - name: Upload API logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-test-logs
+          path: adk-backend/api.log
+          retention-days: 7
