@@ -1,0 +1,118 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches: [master, main, develop]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  pr-validation:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate PR title
+        run: |
+          TITLE="${{ github.event.pull_request.title }}"
+
+          # Check for conventional commit format (optional but recommended)
+          if [[ ! $TITLE =~ ^(feat|fix|docs|style|refactor|perf|test|chore)(\(.+\))?:\s.{1,} ]]; then
+            echo "⚠️ PR title should follow conventional commits format (feat/fix/docs/etc): $TITLE"
+            # Don't fail, just warn
+          fi
+
+          # Check length
+          if [[ ${#TITLE} -gt 80 ]]; then
+            echo "⚠️ PR title is too long (${#TITLE} chars, max 80)"
+          fi
+
+      - name: Check for changelog entry
+        run: |
+          # Only check on main/master branches
+          if [[ "${{ github.event.pull_request.base.ref }}" == "main" || "${{ github.event.pull_request.base.ref }}" == "master" ]]; then
+            if ! grep -q "^#" CHANGELOG.md 2>/dev/null || grep -q "^## \[Unreleased\]" CHANGELOG.md 2>/dev/null; then
+              echo "⚠️ Consider updating CHANGELOG.md"
+            fi
+          fi
+        continue-on-error: true
+
+      - name: Check for tests
+        run: |
+          # Check if PR touches source code but doesn't have test changes
+          CHANGED_FILES=$(git diff --name-only origin/${{ github.base_ref }} HEAD || echo "")
+
+          if echo "$CHANGED_FILES" | grep -E '^(app|adk-backend)/(lib|agents|tools)' > /dev/null; then
+            if ! echo "$CHANGED_FILES" | grep -E '^(app|adk-backend)/tests?' > /dev/null; then
+              echo "⚠️ Consider adding tests for code changes"
+            fi
+          fi
+        continue-on-error: true
+
+  diff-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Analyze file changes
+        run: |
+          echo "## 📊 File Changes Summary" >> $GITHUB_STEP_SUMMARY
+
+          git diff --name-only origin/${{ github.base_ref }}...HEAD | sort > /tmp/changed_files.txt
+
+          echo "### Frontend changes" >> $GITHUB_STEP_SUMMARY
+          if grep -E '^app/|^components/|^lib/' /tmp/changed_files.txt > /dev/null 2>&1; then
+            echo "- $(grep -E '^app/|^components/|^lib/' /tmp/changed_files.txt | wc -l) files changed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- None" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "### Backend changes" >> $GITHUB_STEP_SUMMARY
+          if grep -E '^adk-backend/' /tmp/changed_files.txt > /dev/null 2>&1; then
+            echo "- $(grep -E '^adk-backend/' /tmp/changed_files.txt | wc -l) files changed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- None" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Check for breaking changes
+        run: |
+          git diff origin/${{ github.base_ref }}...HEAD -- \
+            'adk-backend/schemas/*' \
+            'app/api/*' \
+            'lib/adk-client.ts' > /tmp/api_changes.txt || true
+
+          if [ -s /tmp/api_changes.txt ]; then
+            echo "⚠️ API/Schema changes detected - ensure backward compatibility"
+          fi
+
+      - name: Estimate review effort
+        run: |
+          ADDITIONS=$(git diff --numstat origin/${{ github.base_ref }}...HEAD | awk '{sum+=$1} END {print sum}')
+          DELETIONS=$(git diff --numstat origin/${{ github.base_ref }}...HEAD | awk '{sum+=$2} END {print sum}')
+
+          echo "## 📈 Diff Stats" >> $GITHUB_STEP_SUMMARY
+          echo "+ $ADDITIONS additions, - $DELETIONS deletions" >> $GITHUB_STEP_SUMMARY
+
+          if [ "$ADDITIONS" -gt 500 ]; then
+            echo "⚠️ Large PR (>500 lines added) - consider breaking into smaller PRs"
+          fi
+
+  required-checks:
+    runs-on: ubuntu-latest
+    needs: [pr-validation, diff-check]
+
+    steps:
+      - name: Summary
+        run: |
+          echo "## ✅ PR Pre-checks Complete" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Waiting for CI/CD workflows to complete:" >> $GITHUB_STEP_SUMMARY
+          echo "- Frontend CI" >> $GITHUB_STEP_SUMMARY
+          echo "- Backend CI" >> $GITHUB_STEP_SUMMARY
+          echo "- Integration Tests" >> $GITHUB_STEP_SUMMARY
+          echo "- Code Quality" >> $GITHUB_STEP_SUMMARY

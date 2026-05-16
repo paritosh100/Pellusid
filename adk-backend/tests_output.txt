@@ -1,0 +1,170 @@
+D:\Python_practice\Pellucid\pellucid-insights\adk-backend\venv\lib\site-packages\pytest_asyncio\plugin.py:208: PytestDeprecationWarning: The configuration option "asyncio_default_fixture_loop_scope" is unset.
+The event loop scope for asynchronous fixtures will default to the fixture caching scope. Future versions of pytest-asyncio will default the loop scope for asynchronous fixtures to function scope. Set the default fixture loop scope explicitly in order to avoid unexpected behavior in the future. Valid fixture loop scopes are: "function", "class", "module", "package", "session"
+
+  warnings.warn(PytestDeprecationWarning(_DEFAULT_FIXTURE_LOOP_SCOPE_UNSET))
+============================= test session starts =============================
+platform win32 -- Python 3.10.11, pytest-8.3.4, pluggy-1.6.0
+rootdir: D:\Python_practice\Pellucid\pellucid-insights\adk-backend
+plugins: anyio-4.12.1, asyncio-0.24.0, cov-6.0.0
+asyncio: mode=strict, default_loop_scope=None
+collected 5 items
+
+tests\test_api.py FFFFF                                                  [100%]
+
+================================== FAILURES ===================================
+______________________ test_generate_reading_normal_mode ______________________
+
+mock_save = <AsyncMock name='save_reading' id='2757787168208'>
+mock_generate = <AsyncMock name='generate_reading' id='2757787439920'>
+client = <async_generator object client at 0x00000282043BBDC0>
+
+    @patch("main.generate_reading", new_callable=AsyncMock)
+    @patch("main.save_reading", new_callable=AsyncMock)
+    async def test_generate_reading_normal_mode(mock_save, mock_generate, client):
+        """
+        Test 1. /api/generate-reading (normal mode)
+        """
+        mock_generate.return_value = fake_reading
+        mock_save.return_value = "fake-reading-id-123"
+    
+        payload = {
+            "name": "Alex",
+            "birthDate": "1990-01-01",
+            "birthCity": "New York",
+            "mode": "normal"
+        }
+    
+        # Pass Authorization header to simulate authenticated user if needed
+        headers = {"Authorization": "Bearer fake_token"}
+    
+>       response = await client.post("/api/generate-reading", json=payload, headers=headers)
+E       AttributeError: 'async_generator' object has no attribute 'post'
+
+tests\test_api.py:78: AttributeError
+_____________________ test_generate_reading_stealth_mode ______________________
+
+mock_save = <AsyncMock name='save_stealth_reading' id='2757788871568'>
+mock_generate = <AsyncMock name='generate_stealth_reading' id='2757788862112'>
+client = <async_generator object client at 0x0000028219028DC0>
+
+    @patch("main.generate_stealth_reading", new_callable=AsyncMock)
+    @patch("main.save_stealth_reading", new_callable=AsyncMock)
+    async def test_generate_reading_stealth_mode(mock_save, mock_generate, client):
+        """
+        Test 2. /api/generate-reading (stealth mode)
+        """
+        mock_generate.return_value = fake_stealth_reading
+        mock_save.return_value = "fake-stealth-id-456"
+    
+        payload = {
+            "name": "Sam",
+            "birthDate": "1992-02-02",
+            "birthCity": "London",
+            "mode": "stealth"
+        }
+    
+>       response = await client.post("/api/generate-reading", json=payload)
+E       AttributeError: 'async_generator' object has no attribute 'post'
+
+tests\test_api.py:106: AttributeError
+_________________________ test_bridge_generate_report _________________________
+
+mock_generate = <AsyncMock name='generate_bridge_report' id='2757787163456'>
+client = <async_generator object client at 0x00000282043BBDC0>
+
+    @patch("main.generate_bridge_report", new_callable=AsyncMock)
+    async def test_bridge_generate_report(mock_generate, client):
+        """
+        Test 3. /api/bridge/generate-report
+        """
+        mock_generate.return_value = fake_bridge_report
+    
+        payload = {
+            "consistency": "somewhat_consistent",
+            "decisionStyle": "analytical",
+            "goalClarity": "foggy",
+            "currentState": "stuck",
+            "stuckDescription": "Just feeling completely paused."
+        }
+    
+>       response = await client.post("/api/bridge/generate-report", json=payload)
+E       AttributeError: 'async_generator' object has no attribute 'post'
+
+tests\test_api.py:133: AttributeError
+____________________________ test_bridge_chat_free ____________________________
+
+mock_chat = <AsyncMock name='bridge_chat' id='2757788920720'>
+client = <async_generator object client at 0x0000028219029040>
+
+    @patch("main.bridge_chat", new_callable=AsyncMock)
+    async def test_bridge_chat_free(mock_chat, client):
+        """
+        Test 4. /api/bridge/chat (free, question_count=1)
+        """
+        # Returns (reply, state)
+        mock_chat.return_value = ("Here is your free reply.", "bridge_free_chat")
+    
+        payload = {
+            "message": "Why am I stuck?",
+            "questionnaireData": {
+                "consistency": "somewhat_consistent",
+                "decisionStyle": "analytical",
+                "goalClarity": "foggy",
+                "currentState": "stuck",
+                "stuckDescription": "stuck"
+            },
+            "reportData": fake_bridge_report.model_dump(),
+            "chatHistory": [],
+            "questionCount": 1
+        }
+    
+>       response = await client.post("/api/bridge/chat", json=payload)
+E       AttributeError: 'async_generator' object has no attribute 'post'
+
+tests\test_api.py:164: AttributeError
+__________________________ test_bridge_chat_paywall ___________________________
+
+mock_chat = <AsyncMock name='bridge_chat' id='2757788997216'>
+client = <async_generator object client at 0x00000282190291C0>
+
+    @patch("main.bridge_chat", new_callable=AsyncMock)
+    async def test_bridge_chat_paywall(mock_chat, client):
+        """
+        Test 5. /api/bridge/chat (paywall, question_count=3)
+        """
+        mock_chat.return_value = (
+            "We've reached the edge... unlock your Deep Pattern Report for $3.99.",
+            "paywall_reached"
+        )
+    
+        payload = {
+            "message": "Give me more info.",
+            "questionnaireData": {
+                "consistency": "somewhat_consistent",
+                "decisionStyle": "analytical",
+                "goalClarity": "foggy",
+                "currentState": "stuck",
+                "stuckDescription": "stuck"
+            },
+            "reportData": fake_bridge_report.model_dump(),
+            "chatHistory": [],
+            "questionCount": 3
+        }
+    
+>       response = await client.post("/api/bridge/chat", json=payload)
+E       AttributeError: 'async_generator' object has no attribute 'post'
+
+tests\test_api.py:198: AttributeError
+============================== warnings summary ===============================
+config\settings.py:9
+  D:\Python_practice\Pellucid\pellucid-insights\adk-backend\config\settings.py:9: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class Settings(BaseSettings):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+FAILED tests/test_api.py::test_generate_reading_normal_mode - AttributeError:...
+FAILED tests/test_api.py::test_generate_reading_stealth_mode - AttributeError...
+FAILED tests/test_api.py::test_bridge_generate_report - AttributeError: 'asyn...
+FAILED tests/test_api.py::test_bridge_chat_free - AttributeError: 'async_gene...
+FAILED tests/test_api.py::test_bridge_chat_paywall - AttributeError: 'async_g...
+======================== 5 failed, 1 warning in 5.73s =========================

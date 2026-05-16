@@ -9,6 +9,9 @@ from config.prompts import (
     VEDIC_ASTROLOGY_PROMPT,
     NUMEROLOGY_PROMPT,
     CHINESE_ASTROLOGY_PROMPT,
+    LUNAR_PROMPT,
+    TAROT_PROMPT,
+    AYURVEDA_PROMPT,
     SYNTHESIS_PROMPT,
     REFINEMENT_PROMPT,
     VALIDATOR_PROMPT
@@ -17,6 +20,9 @@ from config.settings import settings
 from tools.astrology_tools import vedic_birth_chart_tool
 from tools.numerology_tools import numerology_profile_tool
 from tools.chinese_astrology_tools import chinese_astrology_tool
+from tools.lunar_tools import lunar_phase_tool
+from tools.tarot_tools import tarot_reading_tool
+from tools.ayurveda_tools import ayurveda_profile_tool
 
 
 # Initialize Gemini client
@@ -53,6 +59,39 @@ def create_chinese_agent() -> Dict[str, Any]:
         "instructions": CHINESE_ASTROLOGY_PROMPT,
         "tools": [chinese_astrology_tool],
         "description": "Expert in Chinese zodiac, elements, and yin/yang balance"
+    }
+
+
+def create_lunar_agent() -> Dict[str, Any]:
+    """Create lunar astrology specialist agent configuration"""
+    return {
+        "name": "lunar_astrology_specialist",
+        "model": settings.default_model,
+        "instructions": LUNAR_PROMPT,
+        "tools": [lunar_phase_tool],
+        "description": "Expert in lunar patterns and cycles"
+    }
+
+
+def create_tarot_agent() -> Dict[str, Any]:
+    """Create tarot specialist agent configuration"""
+    return {
+        "name": "tarot_specialist",
+        "model": settings.default_model,
+        "instructions": TAROT_PROMPT,
+        "tools": [tarot_reading_tool],
+        "description": "Expert in tarot archetypes and thematic reflections"
+    }
+
+
+def create_ayurveda_agent() -> Dict[str, Any]:
+    """Create ayurveda specialist agent configuration"""
+    return {
+        "name": "ayurveda_specialist",
+        "model": settings.default_model,
+        "instructions": AYURVEDA_PROMPT,
+        "tools": [ayurveda_profile_tool],
+        "description": "Expert in Ayurvedic doshas and elements"
     }
 
 
@@ -225,14 +264,135 @@ Use the chinese_astrology_tool to calculate the Chinese astrology profile, then 
         }
 
 
-async def run_synthesis(vedic_result: Dict, numerology_result: Dict, chinese_result: Dict, user_data: Dict) -> Dict:
+async def run_lunar_analysis(user_data: Dict[str, str]) -> Dict:
     """
-    Synthesize insights from all systems
+    Run lunar astrology analysis
+    """
+    agent_config = create_lunar_agent()
+    
+    prompt = f"""Analyze the following birth data using lunar astrology:
+
+Name: {user_data['name']}
+Birth Date: {user_data['birthDate']}
+Focus Area: {user_data.get('focusArea', 'general life patterns')}
+
+Use the lunar_phase_tool to calculate the lunar patterns, then provide your analysis.
+"""
+    
+    response = client.models.generate_content(
+        model=agent_config["model"],
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=agent_config["instructions"],
+            temperature=0.3,
+            response_mime_type="application/json"
+        )
+    )
+    
+    try:
+        result = json.loads(response.text)
+        return result
+    except json.JSONDecodeError:
+        return {
+            "system": "lunar",
+            "moon_phase": "Unknown",
+            "moon_sign": "Unknown",
+            "key_themes": ["Internal rhythms"],
+            "strengths_indicated": ["Intuition"],
+            "areas_of_focus": ["Emotional balance"],
+            "notes": "Analysis based on birth date"
+        }
+
+
+async def run_tarot_analysis(user_data: Dict[str, str]) -> Dict:
+    """
+    Run tarot analysis
+    """
+    agent_config = create_tarot_agent()
+    
+    prompt = f"""Analyze the current focus using tarot cards:
+
+Name: {user_data['name']}
+Focus Area: {user_data.get('focusArea', 'general life patterns')}
+
+Use the tarot_reading_tool to draw cards, then provide your analysis.
+"""
+    
+    response = client.models.generate_content(
+        model=agent_config["model"],
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=agent_config["instructions"],
+            temperature=0.4,
+            response_mime_type="application/json"
+        )
+    )
+    
+    try:
+        result = json.loads(response.text)
+        return result
+    except json.JSONDecodeError:
+        return {
+            "system": "tarot",
+            "cards_drawn": ["The Fool", "The Magician", "The High Priestess"],
+            "key_themes": ["New beginnings"],
+            "strengths_indicated": ["Creative potential"],
+            "challenges_or_tensions": ["Trusting intuition"],
+            "notes": "Fall-back analysis"
+        }
+
+
+async def run_ayurveda_analysis(user_data: Dict[str, str]) -> Dict:
+    """
+    Run ayurveda analysis
+    """
+    agent_config = create_ayurveda_agent()
+    
+    prompt = f"""Analyze the energetic tendencies using Ayurveda:
+
+Name: {user_data['name']}
+Birth Date: {user_data['birthDate']}
+Focus Area: {user_data.get('focusArea', 'general life patterns')}
+
+Use the ayurveda_profile_tool to estimate the dosha profile, then provide your analysis.
+"""
+    
+    response = client.models.generate_content(
+        model=agent_config["model"],
+        contents=prompt,
+        config=types.GenerateContentConfig(
+            system_instruction=agent_config["instructions"],
+            temperature=0.3,
+            response_mime_type="application/json"
+        )
+    )
+    
+    try:
+        result = json.loads(response.text)
+        return result
+    except json.JSONDecodeError:
+        return {
+            "system": "ayurveda",
+            "primary_dosha": "Tridoshic",
+            "secondary_dosha": "None",
+            "key_themes": ["Energetic balance"],
+            "strengths_indicated": ["Adaptability"],
+            "balancing_focus": ["Grounding routines"],
+            "notes": "Fall-back analysis"
+        }
+
+
+async def run_synthesis(vedic_result: Dict, numerology_result: Dict, chinese_result: Dict, lunar_result: Dict, tarot_result: Dict, ayurveda_result: Dict, user_data: Dict) -> Dict:
+    """
+    Synthesize insights from all 6 systems
     
     Args:
         vedic_result: Vedic analysis
         numerology_result: Numerology analysis
         chinese_result: Chinese astrology analysis
+        lunar_result: Lunar analysis
+        tarot_result: Tarot analysis
+        ayurveda_result: Ayurveda analysis
         user_data: Original user data
     
     Returns:
@@ -250,6 +410,15 @@ NUMEROLOGY:
 
 CHINESE ASTROLOGY:
 {json.dumps(chinese_result, indent=2)}
+
+LUNAR ASTROLOGY:
+{json.dumps(lunar_result, indent=2)}
+
+TAROT:
+{json.dumps(tarot_result, indent=2)}
+
+AYURVEDA:
+{json.dumps(ayurveda_result, indent=2)}
 
 USER CONTEXT:
 Name: {user_data['name']}
@@ -280,24 +449,37 @@ Identify convergent themes, divergent perspectives, and meta-patterns.
         }
 
 
-async def run_refinement(synthesis_result: Dict, user_data: Dict) -> Dict:
+async def run_refinement(synthesis_result: Dict, user_data: Dict, fusion_result: Dict = None) -> Dict:
     """
     Refine synthesis into final Pellucid format
     
     Args:
         synthesis_result: Synthesized insights
         user_data: Original user data
+        fusion_result: Optional ranked fusion themes from the fusion agent
     
     Returns:
         Final reading in Pellucid format
     """
     agent_config = create_refinement_agent()
     
+    fusion_section = ""
+    if fusion_result and fusion_result.get("fused_themes"):
+        fusion_section = f"""
+
+FUSION ANALYSIS (ranked themes with confidence scores):
+{json.dumps(fusion_result, indent=2)}
+
+Use the highest-confidence fused themes to prioritise which insights
+appear in the final reading.  Themes with confidence >= 0.7 should be
+prominently featured.
+"""
+
     prompt = f"""Create the final reading based on this synthesis:
 
 SYNTHESIS:
 {json.dumps(synthesis_result, indent=2)}
-
+{fusion_section}
 USER CONTEXT:
 Name: {user_data['name']}
 Focus Area: {user_data.get('focusArea', 'general patterns')}

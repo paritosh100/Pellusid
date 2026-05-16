@@ -1,51 +1,56 @@
-/**
- * API Route: Bridge — Generate Initial Report
- * POST /api/bridge/generate-report
- */
-
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
-import { generateBridgeReport } from "@/lib/bridge";
-import type { BridgeGenerateReportResponse } from "@/lib/bridge-types";
 
 export const dynamic = "force-dynamic";
 
-const BridgeQuestionnaireSchema = z.object({
-    consistency: z.enum(["very_consistent", "somewhat_consistent", "inconsistent", "chaotic"]),
-    decisionStyle: z.enum(["analytical", "intuitive", "collaborative", "avoidant"]),
-    goalClarity: z.enum(["crystal_clear", "mostly_clear", "foggy", "no_goals"]),
-    currentState: z.enum(["stuck", "overwhelmed", "restless", "numb", "conflicted"]),
-    stuckDescription: z.string().min(1, "Please describe where you feel stuck").max(500),
-    name: z.string().max(100).optional(),
-});
-
 export async function POST(request: NextRequest) {
     try {
-        const body = await request.json();
-        const validation = BridgeQuestionnaireSchema.safeParse(body);
-
-        if (!validation.success) {
-            const errorMsg = validation.error.issues
-                .map((e) => `${e.path.join(".")}: ${e.message}`)
-                .join(", ");
-            return NextResponse.json(
-                { error: "Invalid input", details: errorMsg },
-                { status: 400 }
-            );
+        const backendUrl = process.env.BACKEND_URL;
+        if (!backendUrl) {
+            console.error("[API Proxy] BACKEND_URL is not configured.");
+            return NextResponse.json({ error: "Backend configuration missing" }, { status: 500 });
         }
 
-        const report = await generateBridgeReport(validation.data);
+        const url = `${backendUrl}/api/bridge/generate-report`;
 
-        return NextResponse.json<BridgeGenerateReportResponse>(
-            { report },
-            { status: 200 }
-        );
+        const body = await request.json();
+
+        const authHeader = request.headers.get("Authorization") || request.headers.get("authorization");
+        const headers: Record<string, string> = {
+            "Content-Type": "application/json",
+        };
+        if (authHeader) {
+            headers["Authorization"] = authHeader;
+        }
+
+        console.log(`[API Proxy] Forwarding request to ${url}`);
+
+        const response = await fetch(url, {
+            method: "POST",
+            headers,
+            body: JSON.stringify(body),
+        });
+
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            const data = await response.json();
+            if (!response.ok) {
+                console.error(`[API Proxy] Error from Python backend:`, response.status, data);
+            }
+            return NextResponse.json(data, { status: response.status });
+        } else {
+            const textData = await response.text();
+            console.error(`[API Proxy] Non-JSON error from Python backend:`, response.status, textData);
+            return new NextResponse(textData, {
+                status: response.status,
+                headers: { "Content-Type": "text/plain" }
+            });
+        }
     } catch (error) {
-        console.error("[Bridge] Report generation error:", error);
+        console.error("[API Proxy] Request failed:", error);
         return NextResponse.json(
             {
-                error: "Failed to generate report",
-                details: error instanceof Error ? error.message : "Unknown error",
+                error: "Internal server error",
+                details: error instanceof Error ? error.message : "Unknown error"
             },
             { status: 500 }
         );

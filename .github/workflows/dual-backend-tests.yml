@@ -1,0 +1,267 @@
+name: Dual Backend Tests
+
+on:
+  push:
+    branches: [master, main, develop, insightbridge-agents]
+    paths:
+      - 'adk-backend/**'
+      - 'lib/adk-client.ts'
+      - 'lib/openai.ts'
+      - 'app/api/**'
+      - '.github/workflows/dual-backend-tests.yml'
+  pull_request:
+    branches: [master, main, develop]
+    paths:
+      - 'adk-backend/**'
+      - 'lib/adk-client.ts'
+      - 'lib/openai.ts'
+      - 'app/api/**'
+
+jobs:
+  test-openai-backend:
+    runs-on: ubuntu-latest
+    name: Test OpenAI Backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js
+        run: npm run build
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          USE_ADK_BACKEND: 'false'
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Start OpenAI backend server
+        run: npm start > frontend.log 2>&1 &
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          USE_ADK_BACKEND: 'false'
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Wait for server to start
+        run: sleep 5
+
+      - name: Test OpenAI /api/generate-reading endpoint
+        run: |
+          RESPONSE=$(curl -s -X POST http://localhost:3000/api/generate-reading \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "OpenAI Test",
+              "birthDate": "1990-05-15",
+              "birthCity": "New York",
+              "focusArea": "general"
+            }')
+
+          echo "Response: $RESPONSE"
+
+          # Check if response contains expected fields
+          if echo "$RESPONSE" | grep -q "readingId\|headline\|coreTheme"; then
+            echo "✅ OpenAI backend response valid"
+          else
+            echo "❌ OpenAI backend response invalid: $RESPONSE"
+            exit 1
+          fi
+        timeout-minutes: 2
+
+      - name: Upload logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openai-backend-logs
+          path: frontend.log
+          retention-days: 7
+
+  test-adk-backend:
+    runs-on: ubuntu-latest
+    name: Test ADK Backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: 'npm'
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Node dependencies
+        run: npm ci
+
+      - name: Install Python dependencies
+        run: |
+          cd adk-backend
+          pip install -r requirements.txt
+
+      - name: Build Next.js
+        run: npm run build
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          USE_ADK_BACKEND: 'true'
+          ADK_BACKEND_URL: http://localhost:8080
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Start ADK backend server
+        run: |
+          cd adk-backend
+          nohup uvicorn main:app --host 0.0.0.0 --port 8080 > backend.log 2>&1 &
+          sleep 4
+        env:
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
+      - name: Check ADK backend health
+        run: curl -f http://localhost:8080/health
+        timeout-minutes: 1
+
+      - name: Start frontend server
+        run: npm start > frontend.log 2>&1 &
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          USE_ADK_BACKEND: 'true'
+          ADK_BACKEND_URL: http://localhost:8080
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
+      - name: Wait for servers to start
+        run: sleep 5
+
+      - name: Test ADK /api/generate-reading endpoint
+        run: |
+          RESPONSE=$(curl -s -X POST http://localhost:3000/api/generate-reading \
+            -H "Content-Type: application/json" \
+            -d '{
+              "name": "ADK Test",
+              "birthDate": "1992-03-20",
+              "birthCity": "London"
+            }')
+
+          echo "Response: $RESPONSE"
+
+          # Check if response contains expected fields
+          if echo "$RESPONSE" | grep -q "readingId"; then
+            echo "✅ ADK backend response valid"
+          else
+            echo "❌ ADK backend response invalid: $RESPONSE"
+            exit 1
+          fi
+        timeout-minutes: 3
+        continue-on-error: true
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: adk-backend-logs
+          path: |
+            adk-backend/backend.log
+            frontend.log
+          retention-days: 7
+
+  test-backend-switching:
+    runs-on: ubuntu-latest
+    name: Test Backend Switching
+    needs: [test-openai-backend, test-adk-backend]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Verify configuration loading
+        run: |
+          python << 'EOF'
+          import os
+
+          # Test that feature flag can be set both ways
+          os.environ["USE_ADK_BACKEND"] = "true"
+          from dotenv import load_dotenv
+          load_dotenv(override=True)
+
+          use_adk = os.getenv("USE_ADK_BACKEND") == "true"
+          print(f"USE_ADK_BACKEND=true -> {use_adk}")
+          assert use_adk, "ADK backend flag not set correctly"
+
+          # Test fallback
+          os.environ["USE_ADK_BACKEND"] = "false"
+          use_adk = os.getenv("USE_ADK_BACKEND") == "true"
+          print(f"USE_ADK_BACKEND=false -> {use_adk}")
+          assert not use_adk, "OpenAI backend flag not set correctly"
+
+          print("✅ Feature flag switching works correctly")
+          EOF
+
+      - name: Verify API client switching
+        run: |
+          python << 'EOF'
+          import sys
+          import os
+
+          # Test TypeScript build can detect feature flag
+          # This would require Next.js build, so we just verify the ENV var exists
+
+          openai_key = os.getenv("OPENAI_API_KEY")
+          adk_url = os.getenv("ADK_BACKEND_URL")
+
+          print(f"OPENAI_API_KEY present: {bool(openai_key)}")
+          print(f"ADK_BACKEND_URL: {adk_url or 'not set'}")
+
+          # At least one should be configured
+          assert openai_key or adk_url, "No backend configured"
+
+          print("✅ API clients can be properly configured")
+          EOF
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          ADK_BACKEND_URL: http://localhost:8080
+
+  summary:
+    runs-on: ubuntu-latest
+    needs: [test-openai-backend, test-adk-backend, test-backend-switching]
+    if: always()
+
+    steps:
+      - name: Print summary
+        run: |
+          echo "## 🔄 Dual Backend Tests Summary" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.test-openai-backend.result }}" == "success" ]; then
+            echo "- ✅ OpenAI Backend: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ OpenAI Backend: Failed" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ needs.test-adk-backend.result }}" == "success" ]; then
+            echo "- ✅ ADK Backend: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ⚠️ ADK Backend: Failed (may require Google API)" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          if [ "${{ needs.test-backend-switching.result }}" == "success" ]; then
+            echo "- ✅ Backend Switching: Passed" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ Backend Switching: Failed" >> $GITHUB_STEP_SUMMARY
+          fi

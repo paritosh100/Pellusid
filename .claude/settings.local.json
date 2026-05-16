@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git commit -m 'feat: add comprehensive CI/CD pipeline with 7 GitHub Actions workflows *)",
+      "Bash(git push *)"
+    ]
+  }
+}
