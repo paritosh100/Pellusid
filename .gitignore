@@ -38,6 +38,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# cloudflare local dev env vars (never commit)
+.dev.vars
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

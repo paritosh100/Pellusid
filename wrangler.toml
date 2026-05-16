@@ -1,0 +1,7 @@
+name = "pellucid-insights"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+
+# For local dev, run `npm run dev` (standard Next.js server)
+# For production, Cloudflare Pages will run the build command
+# configured in the dashboard: next build && npx @cloudflare/next-on-pages
